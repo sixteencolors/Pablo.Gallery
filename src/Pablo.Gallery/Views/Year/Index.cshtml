@@ -2,17 +2,18 @@
 @{
     ViewBag.Title = "Years";
 }
-
-<h2>Years</h2>
-
+@section SecondaryHeader {
+    <h2>Years</h2>
+}
 <ul id="result" class="years"></ul>
 <div id="loading">Loading...</div>
 
 @section Scripts {
-<script id="year-template" type="text/x-jsrender">
+    <script id="year-template" type="text/x-jsrender">
 	<li class="year">
 		<a href="@Url.Content("~/"){{attr:url}}" title="{{attr:year}} - {{attr:packs}} packs" class="btn btn-default">
 			<span class="file-name">{{>year}}</span>
+            <span class="packs">{{for ~getFields(packs/2)}}.{{/for}}</span>
 		</a>
 	</li>
 </script>
@@ -24,7 +25,26 @@
 			template: "#year-template",
 			loading: "#loading",
 			selector: function(data) { return data.years; },
+			onComplete: function () {
+			    // var msnry = new Masonry('.files', {});
+			    var maxHeight = Math.max.apply(null, $("li.year a").map(function () {
+			        return $(this).height();
+			    }).get());
+			    $("li.year a").height(maxHeight);
+			}
 		});
+
+	    $.views.helpers({
+	        getFields: function (count) {
+	            var fieldsArray = [];
+	            for (var i = 0; i < count; i++) {
+	                fieldsArray.push({});
+	            }
+
+	            return fieldsArray;
+	        }
+	    });
+
 	});
 </script>
 }

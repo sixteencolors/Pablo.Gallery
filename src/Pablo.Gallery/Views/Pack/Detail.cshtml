@@ -2,16 +2,19 @@
 @{
     ViewBag.Title = "Pack " + Model.Name;
 }
-<h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Detail", "Year", new { year = Model.Date.Value.Year }, null)\@Model.Name</h2>
-<p>
-	<a href="@Url.Content(Model.DownloadUrl())">Download Pack</a>
-</p>
 
+@section SecondaryHeader {
+    <h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Detail", "Year", new {year = Model.Date.Value.Year}, null)\@Model.Name</h2>
+    <p>
+        <a href="@Url.Content(Model.DownloadUrl())">Download Pack</a>
+    </p>
+}
 <ul id="result" class="files"></ul>
 <div id="loading">Loading...</div>
 
+@Scripts.Render("~/scripts/masonry.pkgd.js")
 @section Scripts {
-<script id="file-template" type="text/x-jsrender">
+    <script id="file-template" type="text/x-jsrender">
 	<li class="file">
 		<a href="@Url.Content("~/"){{attr:url}}" class="thumbs" data-img="{{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="{{attr:downloadUrl}}">
 			<span class="file-image">
@@ -21,24 +24,27 @@
 		</a>
 	</li>
 </script>
-<script>
-	$(function() {
-		$('#result').pageloader({
-			url: "@Url.RouteUrl("api", new { httproute="", Controller = "Pack", id = Model.Name })",
-			template: "#file-template",
-			loading: "#loading",
-			selector: function(data) { return data.files; }
-		});
-		$('#result').gallery({
-			images: 'a.thumbs',
-			rel: 'thumbs',
-			loadMore: function(finished) {
-				$('#result').pageloader('load', finished);
-			}
-		});
-	});
-</script>
+    <script>
+        $(function() {
+            $('#result').pageloader({
+                url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})",
+                template: "#file-template",
+                loading: "#loading",
+                selector: function(data) { return data.files; },
+                onComplete: function() {
+                    var msnry = new Masonry('.files', {});
+                }
+            });
+            $('#result').gallery({
+                images: 'a.thumbs',
+                rel: 'thumbs',
+                loadMore: function(finished) {
+                    $('#result').pageloader('load', finished);
+                }
+            });
+        });
+    </script>
 
- }
+}
 
     

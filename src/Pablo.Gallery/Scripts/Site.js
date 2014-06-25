@@ -107,7 +107,8 @@ $(document).ready(function () {
 		content: $(document),
 		loading: null,
 		selector: null,
-		closeness: $(window).height()
+		closeness: $(window).height(),
+        onComplete: null
 	};
 
 	var o;
@@ -140,7 +141,9 @@ $(document).ready(function () {
 						$(o.loading).hide();
 						o.inProgress = false;
 						if (loaded)
-							loaded();
+						    loaded();
+					    if (o.onComplete != null)
+					        o.onComplete();
 					},
 					error: o.error
 				});
@@ -173,10 +176,10 @@ $(document).ready(function () {
 		},
 		load: function(loaded) {
 			if (!o.finished && !o.inProgress) {
-				o.inProgress = true;
-				$(o.loading).show();
-				functions.load(loaded);
-			}
+			    o.inProgress = true;
+			    $(o.loading).show();
+			    functions.load(loaded);
+			} 
 		}
 	};
 
@@ -192,3 +195,4 @@ $(document).ready(function () {
 	};
 
 })( jQuery );
+

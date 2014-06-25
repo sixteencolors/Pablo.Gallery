@@ -2,9 +2,15 @@
     ViewBag.Title = "File Results";
 }
 
+@using (Html.BeginForm("Index", "File", FormMethod.Get))
+{
+    @Html.TextBox("query")
+    <input type="submit" value="Search"/>
+}
 <ul id="result" class="files"></ul>
 <div id="loading">Loading...</div>
 
+@Scripts.Render("~/scripts/masonry.pkgd.js")
 @section Scripts {
 <script id="file-template" type="text/x-jsrender">
 	<li class="file">
@@ -27,6 +33,9 @@
 			url: "@Url.RouteUrl("api", new { httproute="", Controller = "file" })",
 			template: "#file-template",
 			loading: "#loading",
+			onComplete: function () {
+			    var msnry = new Masonry('.files', {});
+			}
 		});
 		$('#result').gallery({
 			images: 'a.thumbs',

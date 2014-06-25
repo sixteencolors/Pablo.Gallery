@@ -11,14 +11,37 @@
 
 @desktop:  ~"only screen and (min-width : 640px)";
 
+// ANSI palette
+@black: rgb(0,0,0);
+@red: rgb(170,0,0);
+@green: rgb(0,170,0);
+@brown: rgb(170, 85, 0);
+@blue: rgb(0, 0, 170);
+@magenta: rgb(170, 0, 170);
+@cyan: rgb(0, 170, 170);
+@gray: rgb(170, 170, 170);
+
+// intense colors
+@black_i: rgb(85, 85, 85);
+@red_i: rgb(255, 85, 85);
+@green_i: rgb(85, 255, 85);
+@brown_i: rgb(255, 255, 85);
+@blue_i: rgb(85, 85, 255);
+@magenta_i: rgb(255, 85, 255);
+@cyan_i: rgb(85, 255, 255);
+@gray_i: rgb(255, 255, 255);
+
+body {
+    background: @gray;
+}
 .body-content {
 	@media @desktop {
-		padding-left: 15px;
-		padding-right: 15px;
+		padding-left: 0;
+		padding-right: 0;
 	}
 	@media @mobile {
-		padding-left: 2%;
-		padding-right: 2%;
+		padding-left: 0;
+		padding-right: 0;
 	}
 	word-wrap:break-word;
 }
@@ -44,13 +67,13 @@
 				width: 46%;
 			}
 			display: block;
-			float: left;
-			height: 140px;
-			overflow: hidden;
+			// float: left;
+			// height: 170px;
+			overflow-x: hidden;
 			text-align: center;
 			position: relative;
 			background-color: black;
-			.rounded(4px);
+			// .rounded(4px);
 
 			a {
 				text-decoration: none;
@@ -60,10 +83,10 @@
 
 			.file-image
 			{
-				height: 110px;
+				// height: 140px;
 				display: block;
-				overflow-y: visible;
-				line-height: 110px;
+				// overflow-y: hidden;
+				line-height: 140px;
 
 				img {
 					max-width: 100%;
@@ -72,19 +95,20 @@
 
 			.file-name
 			{
-				font-size: 12px;
 				display: inline-block;
 				height: 30px;
 				padding: 6px 0px;
 				white-space: nowrap;
 				width: 100%;
-				background-color: black;
 				background-color: rgba(0,0,0,0.8);
+				background-color: #fff;
+                color: #000;
+                text-transform: uppercase;
 			}
 		}
 
 		li.file:hover {
-			.box-shadow(0px 0px 10px black);
+			//.box-shadow(0px 0px 10px black);
 			.transition();
 
 			a {
@@ -92,7 +116,7 @@
 			}
 			.name, .file-name
 			{
-				background-color: #333;
+				background-color: @cyan_i;
 			}
 		}
 
@@ -102,6 +126,11 @@
 .page-file-index
 {
 	.files {
+        li.file:hover {
+            .name, .pack-name {
+                background-color: @cyan_i;
+            }
+        }
 		li.file {
 			.name {
 				display: block;
@@ -109,7 +138,11 @@
 			.pack-name {
 				display: block;
 				font-size: 10px;
-				height: 12px;
+				background-color: #fff;
+                color: #000;
+                text-transform: uppercase;
+                line-height:normal;
+                padding-top: 1em;
 			}
 
 			.file-name {
@@ -157,4 +190,36 @@ a.btn-default {
 		}
 	}
 
+}
+
+footer {
+    padding: 15px;
+    background: @black;
+    color: @gray;
+    margin-top:3em;
+}
+
+.navbar-inverse .navbar-brand {
+    color: @gray_i;
+}
+
+h2 {
+    a {
+        color: @cyan;
+    }
+
+    a:hover {
+        color: @cyan_i;
+        text-decoration: none;
+        /* background: #eee; */
+    }
+
+    background: @black_i;
+    padding: 2em;
+    /* padding-bottom: 2em; */
+    margin-top: 1em;
+    /* height: 4em; */
+    /* vertical-align: middle; */
+    /* position: relative; */
+    color: @gray_i;
 }

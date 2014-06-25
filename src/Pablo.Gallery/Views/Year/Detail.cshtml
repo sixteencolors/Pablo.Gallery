@@ -2,12 +2,14 @@
 @{
     ViewBag.Title = "Year " + @Model;
 }
+@section SecondaryHeader {
+    <h2>@Model</h2>
+}
 
-<h2>@Model</h2>
-
-<ul id="result" class="files"></ul>
+<ul id="result" class="files packs"></ul>
 <div id="loading">Loading...</div>
 
+@Scripts.Render("~/scripts/masonry.pkgd.js")
 @section Scripts {
 <script id="pack-template" type="text/x-jsrender">
 	<li class="file">
@@ -27,6 +29,9 @@
 			template: "#pack-template",
 			selector: function(data) { return data.packs; },
 			loading: "#loading",
+			onComplete: function () {
+			    var msnry = new Masonry('.files', {});
+			}
 		});
 	});
 </script>
