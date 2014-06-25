@@ -70,14 +70,21 @@ namespace Pablo.Gallery.Logic
 							var pack = db.Packs.FirstOrDefault(r => r.FileName.ToLower() == packShortFile.ToLower());
 							if (pack == null)
 							{
+							    var name = Path.GetFileNameWithoutExtension(packFileEntry);
+                                if (db.Packs.Any(p =>p.Name == name))
+							    {
+							        updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
+							            packShortFile.ToLower()));
+							        continue;
+							    }
 								pack = new Pack
 								{
 									Name = CanonicalName(Path.GetFileNameWithoutExtension(packFileEntry)),
 									FileName = packShortFile,
 									Date = date
 								};
-								db.Packs.Add(pack);
-								db.SaveChanges();
+                                db.Packs.Add(pack);
+							    db.SaveChanges();
 							}
 							else
 							{
