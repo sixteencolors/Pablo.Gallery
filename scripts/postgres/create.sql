@@ -1,4 +1,4 @@
-/*
+﻿/*
  Navicat Premium Data Transfer
 
  Source Server         : server-postgres
@@ -15,8 +15,7 @@
  Date: 11/28/2013 17:55:17 PM
 */
 
-DROP SCHEMA IF EXISTS "gallery" CASCADE;
-CREATE SCHEMA "gallery";
+CREATE SCHEMA IF NOT EXISTS "gallery";
 SET SCHEMA 'gallery';
 
 -- ----------------------------
