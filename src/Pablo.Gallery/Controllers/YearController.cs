@@ -6,12 +6,14 @@ namespace Pablo.Gallery.Controllers
 {
 	public class YearController : Controller
 	{
-		public ActionResult Detail(int year)
+		public ActionResult Detail(int? year)
 		{
-			return View(year);
+            // I could not figure out a route to do this, so if the route has a null year, return the index
+            // (needed for support of legacy Sixteen Colors URL's
+		    return !year.HasValue ? View("Index") : View(year.Value);
 		}
 
-		public ActionResult Index()
+	    public ActionResult Index()
 		{
 			return View();
 		}

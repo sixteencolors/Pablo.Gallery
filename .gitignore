@@ -4,3 +4,4 @@ bin
 packages
 obj
 *.user
+src/Pablo.Gallery/app.config

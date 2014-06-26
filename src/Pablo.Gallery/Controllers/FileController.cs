@@ -10,8 +10,10 @@ namespace Pablo.Gallery.Controllers
 {
 	public class FileController : Controller
 	{
-		public ActionResult Index(string format = null, string type = null, string query = null)
+		public ActionResult Index(string format = null, string type = null, string query = null, string q = null)
 		{
+            // Handle Sixteen Colors legacy route
+		    if (!string.IsNullOrEmpty(q) && string.IsNullOrEmpty(query)) query = q;
 			ViewBag.Params = JsonConvert.SerializeObject(new {
 				Format = format,
 				Type = type,
