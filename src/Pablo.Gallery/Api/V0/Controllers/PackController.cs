@@ -31,8 +31,8 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			var results = packs.Skip(page * size).Take(size).AsEnumerable();
 			return new PackResult
 			{
-				Packs = from p in results
-				        select new PackSummary(p)
+				Packs = (from p in results
+				        select new PackSummary(p)).ToList()
 			};
 		}
 

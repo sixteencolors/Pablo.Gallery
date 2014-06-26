@@ -21,37 +21,37 @@ namespace Pablo.Gallery.Api.ApiModels
 		}
 
 		[DataMember(Name = "url")]
-		public string Url { get { return "pack/" + file.Path; } }
+        public string Url { get { return "pack/" + file.Path; } set { } }
 
 		[DataMember(Name = "downloadUrl")]
-		public string DownloadUrl { get { return file.DownloadUrl().TrimStart('~'); } }
+        public string DownloadUrl { get { return file.DownloadUrl().TrimStart('~'); } set { } }
 
 		[DataMember(Name = "previewUrl")]
-		public string PreviewUrl { get { return file.PreviewUrl(maxWidth: 320).TrimStart('~'); } }
+        public string PreviewUrl { get { return file.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }
 
 		[DataMember(Name = "pack")]
-		public string Pack { get { return file.Pack.Name; } }
+        public string Pack { get { return file.Pack.Name; } set { } }
 
 		[DataMember(Name = "path")]
-		public string Path { get { return Logic.Scanner.NormalizedPath(System.IO.Path.GetDirectoryName(file.NativeFileName)); } }
+        public string Path { get { return Logic.Scanner.NormalizedPath(System.IO.Path.GetDirectoryName(file.NativeFileName)); } set { } }
 
 		[DataMember(Name = "fileName")]
-		public string FileName { get { return System.IO.Path.GetFileName(file.NativeFileName); } }
+        public string FileName { get { return System.IO.Path.GetFileName(file.NativeFileName); } set { } }
 
 		[DataMember(Name = "name")]
-		public string Name { get { return file.Name; } }
+        public string Name { get { return file.Name; } set { } }
 
 		[DataMember(Name = "format")]
-		public string Format { get { return file.Format; } }
+        public string Format { get { return file.Format; } set { } }
 
 		[DataMember(Name = "type")]
-		public string Type { get { return file.Type; } }
+        public string Type { get { return file.Type; } set { } }
 
 		[DataMember(Name = "displayUrl")]
-		public string DisplayUrl { get { return file.DisplayUrl().TrimStart('~'); } }
+        public string DisplayUrl { get { return file.DisplayUrl().TrimStart('~'); } set { } }
 
 		[DataMember(Name = "displayType")]
-		public string DisplayType { get { return file.DisplayType(); } }
+        public string DisplayType { get { return file.DisplayType(); } set { } }
 	}
 
 	[DataContract(Name = "file")]

@@ -28,23 +28,23 @@ namespace Pablo.Gallery.Api.ApiModels
 		}
 
 		[DataMember(Name = "url")]
-		public string Url { get { return "pack/" + pack.Name; } }
+        public string Url { get { return "pack/" + pack.Name; } set { } }
 
 		[DataMember(Name = "previewUrl")]
 		public string PreviewUrl { get { return pack.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }
 
 		[DataMember(Name = "name")]
-		public string Name { get { return pack.Name; } }
+        public string Name { get { return pack.Name; } set { } }
 
 		[DataMember(Name = "date")]
 		[JsonConverter(typeof(DateOnlyConverter))]
-		public DateTime? Date { get { return pack.Date; } }
+        public DateTime? Date { get { return pack.Date; } set { } }
 
 		[DataMember(Name = "groups")]
 		public string[] Groups { get; set; }
 
 		[DataMember(Name = "fileName")]
-		public string FileName { get { return pack.FileName; } }
+        public string FileName { get { return pack.FileName; } set { } }
 
 		[DataMember(Name = "thumbnail")]
 		public FileSummary Thumbnail
