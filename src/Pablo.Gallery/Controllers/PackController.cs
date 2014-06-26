@@ -9,9 +9,13 @@ namespace Pablo.Gallery.Controllers
 	{
 		readonly Models.GalleryContext db = new Models.GalleryContext();
 
-		public ActionResult Index(string query = null)
+		public ActionResult Index(string query = null, int? year = null)
 		{
-			return View(query);
+            ViewBag.Params = JsonConvert.SerializeObject(new {
+                Year = year,
+                Query = query
+            });
+            return View();
 		}
 
 		public ActionResult Detail(string pack)

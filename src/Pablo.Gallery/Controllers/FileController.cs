@@ -12,12 +12,11 @@ namespace Pablo.Gallery.Controllers
 	{
 		public ActionResult Index(string format = null, string type = null, string query = null, string q = null)
 		{
-            // Handle Sixteen Colors legacy route
-		    if (!string.IsNullOrEmpty(q) && string.IsNullOrEmpty(query)) query = q;
-			ViewBag.Params = JsonConvert.SerializeObject(new {
+            // q handles legacy Sixteen Colors path
+            ViewBag.Params = JsonConvert.SerializeObject(new {
 				Format = format,
 				Type = type,
-				Query = query
+				Query = query ?? q
 			});
 			return View();
 		}

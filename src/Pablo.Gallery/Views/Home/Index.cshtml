@@ -4,3 +4,33 @@
     ViewBag.Title = "Home";
 }
 
+@section SecondaryHeader {
+    <h2>Latest Pack</h2>
+}
+
+<ul id="result" class="files packs latest"></ul>
+<div id="loading">Loading...</div>
+
+@section Scripts {
+    <script id="pack-template" type="text/x-jsrender">
+        <li class="file">
+            <a href="@Url.Content("~/"){{attr:url}}">
+                <span class="file-image">
+                    <img src="{{attr:previewUrl}}" />
+                </span>
+                <span class="file-name">{{>name}}</span>
+            </a>
+        </li>
+    </script>
+
+    <script>
+        $(function () {
+            $('#result').pageloader({
+                url: "@Url.RouteUrl("api", new { httproute="", Controller = "Pack", size = "3" })",
+                template: "#pack-template",
+                selector: function (data) { return data.packs; },
+                loading: "#loading",
+            });
+        });
+    </script>
+}
