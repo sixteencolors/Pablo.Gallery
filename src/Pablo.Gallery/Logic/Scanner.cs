@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -184,7 +185,7 @@ namespace Pablo.Gallery.Logic
 
 			if (file.Type == FileType.Character.Name)
 			{
-				if (false && file.Content == null)
+                if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
 				{
 					using (var stream = getStream())
 					{
