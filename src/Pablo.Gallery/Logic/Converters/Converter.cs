@@ -31,6 +31,8 @@ namespace Pablo.Gallery.Logic.Converters
 
 	public abstract class Converter
 	{
+		public abstract bool Enabled { get; }
+
 		public abstract bool CanConvert(ConvertInfo info);
 
 		public abstract Task<Stream> Convert(ConvertInfo info);

@@ -15,6 +15,8 @@ namespace Pablo.Gallery.Logic.Extractors
 			return extension == ".zip" || extension == ".7z" || extension == ".rar" || extension == ".tar.gz";
 		}
 
+		public override bool Enabled { get { return true; } }
+
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
 		{
 			using (var archive = SharpCompress.Archive.ArchiveFactory.Open(archiveFileName))
@@ -48,7 +50,7 @@ namespace Pablo.Gallery.Logic.Extractors
 
 		public override async Task<Stream> ExtractFile(string archiveFileName, string fileName)
 		{
-			fileName = fileName.Replace('\\', '/'); // always in unix form
+			fileName = fileName.Replace('\\', Path.DirectorySeparatorChar); // for unix form
 			archiveFileName = Path.Combine(Global.SixteenColorsArchiveLocation, archiveFileName);
 			using (var archive = SharpCompress.Archive.ArchiveFactory.Open(archiveFileName))
 			{

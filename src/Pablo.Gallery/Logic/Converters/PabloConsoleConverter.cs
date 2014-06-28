@@ -17,6 +17,8 @@ namespace Pablo.Gallery.Logic.Converters
 			this.monoPath = monoPath ?? ConfigurationManager.AppSettings["MonoPath"];
 		}
 
+		public override bool Enabled { get { return true; } }
+
 		public override bool CanConvert(ConvertInfo info)
 		{
 			return !string.IsNullOrEmpty(monoPath) &&

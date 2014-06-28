@@ -20,6 +20,8 @@ namespace Pablo.Gallery.Logic.Converters
 			this.ffmpegPath = ffmpegPath ?? ConfigurationManager.AppSettings["FFmpegPath"];
 		}
 
+		public override bool Enabled { get { return !string.IsNullOrEmpty(xmpPath) && !string.IsNullOrEmpty(ffmpegPath); } }
+
 		static readonly string[] inputFormats = { ".s3m", ".669", ".mtm", ".it", ".mod", ".stm", ".rtm", ".far", ".ult", ".xm"};
 		static readonly string[] outputFormats = { ".mp3", ".oga", ".ogg"};
 

@@ -15,6 +15,8 @@ namespace Pablo.Gallery.Logic.Extractors
 			this.extractors = (extractors ?? ExtractorFactory.Extractors).ToArray();
 		}
 
+		public override bool Enabled { get { return extractors.Any(r => r.Enabled); } }
+
 		public override bool CanExtractFile(string extension)
 		{
 			return extractors.Any(r => r.CanExtractFile(extension));
@@ -25,16 +27,20 @@ namespace Pablo.Gallery.Logic.Extractors
 			List<Exception> exceptions = null;
 			for (int i = 0; i < extractors.Length; i++)
 			{
-				try
+				var extractor = extractors[i];
+				if (extractor.Enabled)
 				{
-					return await extractors[i].ExtractFile(archiveFileName, fileName);
-				}
-				catch (Exception ex)
-				{
-					exceptions = exceptions ?? new List<Exception>();
-					exceptions.Add(ex);
-					if (i == extractors.Length - 1)
-						throw new AggregateException("Could not extract file", exceptions);
+					try
+					{
+						return await extractor.ExtractFile(archiveFileName, fileName);
+					}
+					catch (Exception ex)
+					{
+						exceptions = exceptions ?? new List<Exception>();
+						exceptions.Add(ex);
+						if (i == extractors.Length - 1)
+							throw new AggregateException("Could not extract file", exceptions);
+					}
 				}
 			}
 			throw new InvalidOperationException();

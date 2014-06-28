@@ -16,6 +16,8 @@ namespace Pablo.Gallery.Logic.Extractors
 			return extension == ".zip";
 		}
 
+		public override bool Enabled { get { return true; } }
+
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
 		{
 			using (var archive = new ZipFile(archiveFileName))

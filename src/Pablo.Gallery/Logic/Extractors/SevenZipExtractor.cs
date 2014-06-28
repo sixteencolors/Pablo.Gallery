@@ -14,6 +14,8 @@ namespace Pablo.Gallery.Logic.Extractors
 
 		protected override string ExecutablePath { get { return exePath; } }
 
+		public override bool Enabled { get { return !string.IsNullOrEmpty(exePath); } }
+
 		public SevenZipExtractor(string exePath = null)
 		{
 			this.exePath = exePath ?? ConfigurationManager.AppSettings["7zipPath"] ?? "/usr/bin/7z";
