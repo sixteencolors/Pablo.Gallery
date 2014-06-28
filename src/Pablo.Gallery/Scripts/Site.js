@@ -8,7 +8,7 @@ $(document).ready(function () {
 	});
 });
 
-(function( $ ){
+(function ($) {
 	var defaults = {
 		images: null,
 		rel: null,
@@ -18,63 +18,62 @@ $(document).ready(function () {
 	};
 
 	var methods = {
-		init : function(options) {
-			var o = $.extend({ }, defaults, options);
+		init: function (options) {
+			var o = $.extend({}, defaults, options);
 
 			var items = $(o.images);
-			$(window).resize(function() {
+			$(window).resize(function () {
 				$.colorbox.resize({
 					width: $(window).width() > 800 ? $(window).width() * 0.8 : $(window).width(),
-					height:$(window).height()
+					height: $(window).height()
 				});
 			});
 
 			var cboptions = {
-					rel: o.rel,
-					photo: function() {
-						return $(this).data('type') == 'image';
-					},
-					iframe: function() {
-						return $(this).data('type') != 'image';
-					},
-					fixed: true,
-					reposition: false,
-					loop: false,
-					height: function() { return $(window).height(); },
-					maxWidth: function() { return $(window).width(); },
-					scalePhotos: false,
-					width: function() { return $(window).width() > 640 ? $(window).width() * 0.8 : $(window).width(); },
-					initialHeight: Math.min(480, $(window).width()), 
-					initialWidth: Math.min(640, $(window).height()),
-					href: function() { return $(this).data('img'); },
-					title: function() {
-						var url = $(this).attr('href');
-						var ret = '<a href="' + url + '" target="_blank">Open In New Window</a>';
-						url = $(this).data('download');
-						ret += ' <a href="' + url + '">Download</a>';
-						var name = $(this).find('.file-name').html();
-						ret += ' <span class="cb-name">' + name + '</span>';
-						if (o.title)
-							ret += o.title($(this));
-						return ret;
-					},
-					onComplete: function() {
-						if (o.loadMore)
-						{
-							var indexes = /(\d+)\D+(\d+)/i.exec($('#cboxCurrent').html())
-							var current = parseInt(indexes[1]);
-							var total = parseInt(indexes[2]);
-							if (current > total - o.loadCloseness)
-								o.loadMore(function() {
-									$(o.images).colorbox($.extend({}, cboptions));
-									items = $(o.images);
-								});
-						}
-
+				rel: o.rel,
+				photo: function () {
+					return $(this).data('type') == 'image';
+				},
+				iframe: function () {
+					return $(this).data('type') != 'image';
+				},
+				fixed: true,
+				reposition: false,
+				loop: false,
+				height: function () { return $(window).height(); },
+				maxWidth: function () { return $(window).width(); },
+				scalePhotos: false,
+				width: function () { return $(window).width() > 640 ? $(window).width() * 0.8 : $(window).width(); },
+				initialHeight: Math.min(480, $(window).width()),
+				initialWidth: Math.min(640, $(window).height()),
+				href: function () { return $(this).data('img'); },
+				title: function () {
+					var url = $(this).attr('href');
+					var ret = '<a href="' + url + '" target="_blank">Open In New Window</a>';
+					url = $(this).data('download');
+					ret += ' <a href="' + url + '">Download</a>';
+					var name = $(this).find('.file-name').html();
+					ret += ' <span class="cb-name">' + name + '</span>';
+					if (o.title)
+						ret += o.title($(this));
+					return ret;
+				},
+				onComplete: function () {
+					if (o.loadMore) {
+						var indexes = /(\d+)\D+(\d+)/i.exec($('#cboxCurrent').html())
+						var current = parseInt(indexes[1]);
+						var total = parseInt(indexes[2]);
+						if (current > total - o.loadCloseness)
+							o.loadMore(function () {
+								$(o.images).colorbox($.extend({}, cboptions));
+								items = $(o.images);
+							});
 					}
-				};
 
-			$(this).on('click', o.images, function(event) {
+				}
+			};
+
+			$(this).on('click', o.images, function (event) {
 				event.preventDefault();
 				$(o.images).colorbox($.extend({ open: true }, cboptions));
 			});
@@ -82,20 +81,20 @@ $(document).ready(function () {
 		},
 	};
 
-	$.fn.gallery = function(methodOrOptions) {
-		if ( methods[methodOrOptions] ) {
-			return methods[ methodOrOptions ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-		} else if ( typeof methodOrOptions === 'object' || ! methodOrOptions ) {
+	$.fn.gallery = function (methodOrOptions) {
+		if (methods[methodOrOptions]) {
+			return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
+		} else if (typeof methodOrOptions === 'object' || !methodOrOptions) {
 			// Default to "init"
-			return methods.init.apply( this, arguments );
+			return methods.init.apply(this, arguments);
 		} else {
-			$.error( 'Method ' +  methodOrOptions + ' does not exist on jQuery.gallery' );
-		}	
+			$.error('Method ' + methodOrOptions + ' does not exist on jQuery.gallery');
+		}
 	};
 
-})( jQuery );
+})(jQuery);
 
-(function( $ ){
+(function ($) {
 
 	var defaults = {
 		type: "get",
@@ -103,61 +102,61 @@ $(document).ready(function () {
 		url: null,
 		error: null,
 		infiniteScroll: true,
-		params: { },
+		params: {},
 		scrollable: $(window),
 		content: $(document),
 		loading: null,
 		selector: null,
 		closeness: $(window).height(),
-        onComplete: null
+		onComplete: null
 	};
 
 	var functions = {
-		  	load: function(o, loaded) {
-		  		if (!o.params.Page)
-		  			o.params.Page = 0;
-		  		var url = o.url;
-		  		var data = null;
-		  		if (o.type == "get")
-		  			url = url + "?" + $.param(o.params);
-		  		else
-					data = JSON.stringify(o.params);
+		load: function (o, loaded) {
+			if (!o.params.Page)
+				o.params.Page = 0;
+			var url = o.url;
+			var data = null;
+			if (o.type == "get")
+				url = url + "?" + $.param(o.params);
+			else
+				data = JSON.stringify(o.params);
 
-				$.ajax({
-					type: o.type,
-					url: url,
-					async: true,
-					data: data,
-					contentType: "application/json",
-					success: function (data) {
-						var elements;
-						if (o.selector != null)
-							data = o.selector(data);
-						if (data != null && data.length) {
-							var template = $.templates(o.template);
-							var elements = template.render(data);
-							o.result.append(elements);
-							o.params.Page++;
-						}
-						else
-							o.finished = true;
-						$(o.result).show();
-						$(o.loading).hide();
-						o.inProgress = false;
-						if (loaded)
-						    loaded();
-					    if (o.onComplete != null)
-					        o.onComplete(elements);
-					},
-					error: o.error
-				});
+			$.ajax({
+				type: o.type,
+				url: url,
+				async: true,
+				data: data,
+				contentType: "application/json",
+				success: function (data) {
+					var elements;
+					if (o.selector != null)
+						data = o.selector(data);
+					if (data != null && data.length) {
+						var template = $.templates(o.template);
+						var elements = template.render(data);
+						o.result.append(elements);
+						o.params.Page++;
+					}
+					else
+						o.finished = true;
+					$(o.result).show();
+					$(o.loading).hide();
+					o.inProgress = false;
+					if (loaded)
+						loaded();
+					if (o.onComplete != null)
+						o.onComplete(elements);
+				},
+				error: o.error
+			});
 
-		  	}
-		};
+		}
+	};
 
 	var methods = {
-		init : function(options) {
-	  
+		init: function (options) {
+
 			var o = $.extend({}, defaults, options);
 			o.result = $(this);
 			o.finished = false;
@@ -168,8 +167,7 @@ $(document).ready(function () {
 			functions.load(o);
 			$(this).data('pageloader', o);
 
-			if (o.infiniteScroll)
-			{
+			if (o.infiniteScroll) {
 				// when we reach close to the bottom of the screen, reload
 				o.scrollable.scroll(function () {
 					if (!o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
@@ -180,10 +178,11 @@ $(document).ready(function () {
 
 			return this;
 		},
-		reload: function(params, loaded) {
+		reload: function (params, loaded) {
 			var o = $(this).data('pageloader');
 			o.params = params;
 			o.inProgress = true;
+			o.finished = false;
 			$(o.result).empty();
 			$(o.result).hide();
 			$(o.loading).show();
@@ -192,23 +191,23 @@ $(document).ready(function () {
 		load: function (loaded) {
 			var o = $(this).data('pageloader');
 			if (!o.finished && !o.inProgress) {
-			    o.inProgress = true;
-			    $(o.loading).show();
-			    functions.load(o, loaded);
-			} 
+				o.inProgress = true;
+				$(o.loading).show();
+				functions.load(o, loaded);
+			}
 		}
 	};
 
-	$.fn.pageloader = function(methodOrOptions) {
-		if ( methods[methodOrOptions] ) {
-			return methods[ methodOrOptions ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-		} else if ( typeof methodOrOptions === 'object' || ! methodOrOptions ) {
+	$.fn.pageloader = function (methodOrOptions) {
+		if (methods[methodOrOptions]) {
+			return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
+		} else if (typeof methodOrOptions === 'object' || !methodOrOptions) {
 			// Default to "init"
-			return methods.init.apply( this, arguments );
+			return methods.init.apply(this, arguments);
 		} else {
-			$.error( 'Method ' +  methodOrOptions + ' does not exist on jQuery.gallery' );
-		}	
+			$.error('Method ' + methodOrOptions + ' does not exist on jQuery.gallery');
+		}
 	};
 
-})( jQuery );
+})(jQuery);
 

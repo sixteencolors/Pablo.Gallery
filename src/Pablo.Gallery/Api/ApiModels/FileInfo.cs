@@ -30,18 +30,19 @@ namespace Pablo.Gallery.Api.ApiModels
 		public string PreviewUrl { get { return file.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }
 
 		[DataMember(Name = "previewWidth")]
-		public int PreviewWidth { get { return Math.Min(file.Width ?? 160, 160); } set { } }
+		public int? PreviewWidth { get { return file.Width != null ? (int?)Math.Min(file.Width.Value, 160) : null; } set { } }
 
 		[DataMember(Name = "previewHeight")]
-		public int PreviewHeight
+		public int? PreviewHeight
 		{
 			get
 			{
-				var height = file.Height ?? 160;
+				var height = file.Height;
 				var width = file.Width;
-				if (width != null)
-					height = width > 0 ? PreviewWidth * height / width.Value : 0;
-				return height;
+				var previewWidth = PreviewWidth;
+				if (height != null && width != null && previewWidth != null)
+					return width > 0 ? previewWidth * height / width : 0;
+				return null;
 			}
 			set { }
 		}

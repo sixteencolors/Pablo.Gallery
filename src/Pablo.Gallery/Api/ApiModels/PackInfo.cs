@@ -28,40 +28,41 @@ namespace Pablo.Gallery.Api.ApiModels
 		}
 
 		[DataMember(Name = "url")]
-        public string Url { get { return "pack/" + pack.Name; } set { } }
+		public string Url { get { return "pack/" + pack.Name; } set { } }
 
 		[DataMember(Name = "previewUrl")]
 		public string PreviewUrl { get { return pack.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }
 
 		[DataMember(Name = "previewWidth")]
-		public int PreviewWidth { get { return Math.Min((pack.Thumbnail != null ? pack.Thumbnail.Width : null) ?? 160, 160); } set { } }
+		public int? PreviewWidth { get { return pack.Thumbnail != null && pack.Thumbnail.Width != null ? (int?)Math.Min(pack.Thumbnail.Width.Value, 160) : null; } set { } }
 
 		[DataMember(Name = "previewHeight")]
-		public int PreviewHeight
+		public int? PreviewHeight
 		{
 			get
 			{
-				var height = (pack.Thumbnail != null ? pack.Thumbnail.Height : null) ?? 160;
-				var width = pack.Thumbnail != null ? pack.Thumbnail.Width : null;
-				if (width != null)
-					height = width > 0 ? PreviewWidth * height / width.Value : 0;
-				return height;
+				var height = pack.Thumbnail != null ? (int?)pack.Thumbnail.Height : null;
+				var width = pack.Thumbnail != null ? (int?)pack.Thumbnail.Width : null;
+				var previewWidth = PreviewWidth;
+				if (height != null && width != null && previewWidth != null)
+					return width > 0 ? previewWidth * height / width : 0;
+				return null;
 			}
 			set { }
 		}
 
 		[DataMember(Name = "name")]
-        public string Name { get { return pack.Name; } set { } }
+		public string Name { get { return pack.Name; } set { } }
 
 		[DataMember(Name = "date")]
 		[JsonConverter(typeof(DateOnlyConverter))]
-        public DateTime? Date { get { return pack.Date; } set { } }
+		public DateTime? Date { get { return pack.Date; } set { } }
 
 		[DataMember(Name = "groups")]
 		public string[] Groups { get; set; }
 
 		[DataMember(Name = "fileName")]
-        public string FileName { get { return pack.FileName; } set { } }
+		public string FileName { get { return pack.FileName; } set { } }
 
 		[DataMember(Name = "thumbnail")]
 		public FileSummary Thumbnail
@@ -78,8 +79,8 @@ namespace Pablo.Gallery.Api.ApiModels
 			: base(p)
 		{
 			Files = (from f in p.Files
-			        orderby f.Order
-				select new FileSummary(f)).Skip(page * size).Take(size);
+			         orderby f.Order
+			         select new FileSummary(f)).Skip(page * size).Take(size);
 		}
 
 		[DataMember(Name = "files")]

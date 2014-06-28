@@ -18,32 +18,32 @@
 	<li class="file">
 		<a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
 			<span class="file-image">
-				<img src="@Url.RootUrl(){{attr:previewUrl}}" height="{{attr:previewHeight}}" width="{{attr:previewWidth}}" />
+				<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight && previewHeight}}height="{{attr:previewHeight}}" width="{{attr:previewWidth}}"{{/if}} />
 			</span>
 			<span class="file-name">{{>fileName}}</span>
 		</a>
 	</li>
 </script>
-    <script>
-        $(function() {
-            $('#result').pageloader({
-                url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})",
-                template: "#file-template",
-                loading: "#loading",
-                selector: function(data) { return data.files; },
-                onComplete: function() {
-                    var msnry = new Masonry('.files', {});
-                }
-            });
-            $('#result').gallery({
-                images: 'a.thumbs',
-                rel: 'thumbs',
-                loadMore: function(finished) {
-                    $('#result').pageloader('load', finished);
-                }
-            });
+<script>
+    $(function() {
+        $('#result').pageloader({
+            url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})",
+            template: "#file-template",
+            loading: "#loading",
+            selector: function(data) { return data.files; },
+            onComplete: function() {
+                var msnry = new Masonry('.files', {});
+            }
         });
-    </script>
+        $('#result').gallery({
+            images: 'a.thumbs',
+            rel: 'thumbs',
+            loadMore: function(finished) {
+                $('#result').pageloader('load', finished);
+            }
+        });
+    });
+</script>
 
 }
 

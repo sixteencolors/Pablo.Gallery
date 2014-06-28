@@ -20,7 +20,7 @@
 		<li class="file">
 			<a href="@Url.RootUrl(){{attr:url}}">
 				<span class="file-image">
-					<img src="@Url.RootUrl(){{attr:previewUrl}}" height="{{attr:previewHeight}}" width="{{attr:previewWidth}}" />
+					<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight && previewHeight}}height="{{attr:previewHeight}}" width="{{attr:previewWidth}}"{{/if}} />
 				</span>
 				<span class="file-name">{{>name}}</span>
 			</a>
