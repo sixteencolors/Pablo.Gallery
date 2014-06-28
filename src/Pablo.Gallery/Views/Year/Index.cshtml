@@ -9,9 +9,9 @@
 <div id="loading">Loading...</div>
 
 @section Scripts {
-    <script id="year-template" type="text/x-jsrender">
+<script id="year-template" type="text/x-jsrender">
 	<li class="year">
-		<a href="@Url.Content("~/"){{attr:url}}" title="{{attr:year}} - {{attr:packs}} packs" class="btn btn-default">
+		<a href="@Url.RootUrl(){{attr:url}}" title="{{attr:year}} - {{attr:packs}} packs" class="btn btn-default">
 			<span class="file-name">{{>year}}</span>
             <span class="packs">{{for ~getFields(packs/2)}}.{{/for}}</span>
 		</a>

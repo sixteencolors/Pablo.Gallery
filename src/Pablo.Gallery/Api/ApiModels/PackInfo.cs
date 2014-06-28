@@ -33,6 +33,23 @@ namespace Pablo.Gallery.Api.ApiModels
 		[DataMember(Name = "previewUrl")]
 		public string PreviewUrl { get { return pack.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }
 
+		[DataMember(Name = "previewWidth")]
+		public int PreviewWidth { get { return Math.Min((pack.Thumbnail != null ? pack.Thumbnail.Width : null) ?? 160, 160); } set { } }
+
+		[DataMember(Name = "previewHeight")]
+		public int PreviewHeight
+		{
+			get
+			{
+				var height = (pack.Thumbnail != null ? pack.Thumbnail.Height : null) ?? 160;
+				var width = pack.Thumbnail != null ? pack.Thumbnail.Width : null;
+				if (width != null)
+					height = width > 0 ? PreviewWidth * height / width.Value : 0;
+				return height;
+			}
+			set { }
+		}
+
 		[DataMember(Name = "name")]
         public string Name { get { return pack.Name; } set { } }
 

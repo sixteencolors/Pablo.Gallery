@@ -31,7 +31,7 @@
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					@* <li>@Html.ActionLink("Packs", "Index", "Year")</li>*@
+					<li>@Html.ActionLink("Packs", "Index", "Pack")</li>
 					@if (User.IsInRole("admin")) { 
 						<li>@Html.ActionLink("Scanner", "Index", "Scanner")</li> 
 					}

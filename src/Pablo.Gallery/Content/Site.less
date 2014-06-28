@@ -31,6 +31,10 @@
 @cyan_i: rgb(85, 255, 255);
 @gray_i: rgb(255, 255, 255);
 
+img {
+	border: none;
+}
+
 body {
     background: @gray;
 }
@@ -178,6 +182,14 @@ a.btn-default {
 }
 
 .page-year-index {
+	.year .btn {
+		width: 18em;
+		white-space: normal;
+		/* vertical-align: bottom; */
+	}
+}
+
+.page-year-index, .page-pack-index {
 
 	ul.years {
 		.clearfix();

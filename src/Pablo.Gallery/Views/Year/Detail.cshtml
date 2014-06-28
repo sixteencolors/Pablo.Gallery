@@ -9,13 +9,13 @@
 <ul id="result" class="files packs"></ul>
 <div id="loading">Loading...</div>
 
-@Scripts.Render("~/scripts/masonry.pkgd.js")
 @section Scripts {
+@Scripts.Render("~/scripts/masonry.pkgd.js")
 <script id="pack-template" type="text/x-jsrender">
 	<li class="file">
-		<a href="@Url.Content("~/"){{attr:url}}">
+		<a href="@Url.RootUrl(){{attr:url}}">
 			<span class="file-image">
-				<img src="{{attr:previewUrl}}" />
+				<img src="@Url.RootUrl(){{attr:previewUrl}}" />
 			</span>
 			<span class="file-name">{{>name}}</span>
 		</a>

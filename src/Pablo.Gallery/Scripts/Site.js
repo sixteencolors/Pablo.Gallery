@@ -102,6 +102,7 @@ $(document).ready(function () {
 		template: null,
 		url: null,
 		error: null,
+		infiniteScroll: true,
 		params: { },
 		scrollable: $(window),
 		content: $(document),
@@ -111,10 +112,10 @@ $(document).ready(function () {
         onComplete: null
 	};
 
-	var o;
-
 	var functions = {
-		  	load: function(loaded) {
+		  	load: function(o, loaded) {
+		  		if (!o.params.Page)
+		  			o.params.Page = 0;
 		  		var url = o.url;
 		  		var data = null;
 		  		if (o.type == "get")
@@ -129,21 +130,24 @@ $(document).ready(function () {
 					data: data,
 					contentType: "application/json",
 					success: function (data) {
+						var elements;
 						if (o.selector != null)
 							data = o.selector(data);
 						if (data != null && data.length) {
 							var template = $.templates(o.template);
-							o.result.append(template.render(data));
+							var elements = template.render(data);
+							o.result.append(elements);
 							o.params.Page++;
 						}
 						else
 							o.finished = true;
+						$(o.result).show();
 						$(o.loading).hide();
 						o.inProgress = false;
 						if (loaded)
 						    loaded();
 					    if (o.onComplete != null)
-					        o.onComplete();
+					        o.onComplete(elements);
 					},
 					error: o.error
 				});
@@ -154,31 +158,43 @@ $(document).ready(function () {
 	var methods = {
 		init : function(options) {
 	  
-			o = $.extend(defaults, options);
+			var o = $.extend({}, defaults, options);
 			o.result = $(this);
 			o.finished = false;
 			o.scrollable = $(o.scrollable);
 			o.content = $(o.content);
 			o.inProgress = true;
-			if (!o.params.Page)
-				o.params.Page = 0;
 			// do our initial load
-			functions.load();
+			functions.load(o);
+			$(this).data('pageloader', o);
 
-			// when we reach close to the bottom of the screen, reload
-			o.scrollable.scroll(function () {
-				if (!o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
-					methods.load();
-				}
-			});
+			if (o.infiniteScroll)
+			{
+				// when we reach close to the bottom of the screen, reload
+				o.scrollable.scroll(function () {
+					if (!o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
+						methods.load.apply(o.result, null);
+					}
+				});
+			}
 
 			return this;
 		},
-		load: function(loaded) {
+		reload: function(params, loaded) {
+			var o = $(this).data('pageloader');
+			o.params = params;
+			o.inProgress = true;
+			$(o.result).empty();
+			$(o.result).hide();
+			$(o.loading).show();
+			functions.load(o, loaded);
+		},
+		load: function (loaded) {
+			var o = $(this).data('pageloader');
 			if (!o.finished && !o.inProgress) {
 			    o.inProgress = true;
 			    $(o.loading).show();
-			    functions.load(loaded);
+			    functions.load(o, loaded);
 			} 
 		}
 	};

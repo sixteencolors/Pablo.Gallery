@@ -359,6 +359,7 @@
     <Content Include="font\dos437-webfont.eot" />
     <Content Include="font\dos437-webfont.ttf" />
     <Content Include="font\dos437-webfont.woff" />
+    <Content Include="Scripts\jquery.parseparams.js" />
     <Content Include="Scripts\masonry.pkgd.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Shared\Error.cshtml" />

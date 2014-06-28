@@ -1,32 +1,81 @@
 ﻿@{
-    ViewBag.Title = "Packs";
+	ViewBag.Title = "Packs";
 }
 
 <h2>Packs</h2>
+
+<ul id="years-result" class="years"></ul>
+@using (Html.BeginForm(null, null, FormMethod.Get))
+{
+	@Html.TextBox("query")
+	<input type="submit" value="Search" id="query-search" />
+}
 
 <ul id="result" class="files"></ul>
 <div id="loading">Loading...</div>
 
 @section Scripts {
-<script id="pack-template" type="text/x-jsrender">
-	<li class="file">
-		<a href="{{attr:PackUrl}}">
-			<span class="file-image">
-				<img src="{{attr:PreviewUrl}}" />
-			</span>
-			<span class="file-name">{{>PackName}}</span>
-		</a>
-	</li>
-</script>
+	@Scripts.Render("~/scripts/masonry.pkgd.js")
+	<script id="pack-template" type="text/x-jsrender">
+		<li class="file">
+			<a href="@Url.RootUrl(){{attr:url}}">
+				<span class="file-image">
+					<img src="@Url.RootUrl(){{attr:previewUrl}}" height="{{attr:previewHeight}}" width="{{attr:previewWidth}}" />
+				</span>
+				<span class="file-name">{{>name}}</span>
+			</a>
+		</li>
+	</script>
 
-<script>
-	$(function() {
-		$('#result').pageloader({
-			params: @Html.Raw(ViewBag.Params),
-			url: "@Url.Action("Detail")",
-			template: "#pack-template",
-			loading: "#loading",
+	<script id="year-template" type="text/x-jsrender">
+		<li class="year">
+			<a href="@Url.RouteUrl(ViewContext.RouteData.Values)?year={{attr:year}}" title="{{attr:year}} - {{attr:packs}} packs" class="btn btn-default year-select" data-year="{{attr:year}}">
+				<span class="file-name">{{>year}}</span>
+			</a>
+		</li>
+	</script>
+
+	<script>
+
+
+		$(function() {
+			$('#query-search').on('click', function() {
+				event.preventDefault();
+				var params = $.parseParams(location.search.substring(1));
+				params.query = $('#query').val();
+				$('#result').pageloader('reload', { year: params.year, query: params.query });
+				var path = location.pathname + '?' + $.param(params);
+				window.history.pushState(params, null, path);
+			});
+			$('#years-result').on('click', '.year-select', function(event) {
+				event.preventDefault();
+				var params = $.parseParams(location.search.substring(1));
+				params.year = $(this).data('year');
+				$('#result').pageloader('reload', { year: params.year, query: params.query });
+				var path = location.pathname + '?' + $.param(params);
+				window.history.pushState(params, null, path);
+			});
+
+			$('#years-result').pageloader({
+				url: "@Url.RouteUrl("api", new { httproute="", Controller = "year"})",
+				template: "#year-template",
+				infiniteScroll: false,
+				selector: function(data) { return data.years; }
+			});
+			$('#result').pageloader({
+				params: @Html.Raw(Json.Encode(ViewBag.Params)),
+				url: "@Url.RouteUrl("api", new { httproute="", Controller = "pack" })",
+				template: "#pack-template",
+				selector: function(data) { return data.packs; },
+				loading: "#loading",
+				onComplete: function (elements) {
+					var masonry = new Masonry('.files', { });
+				}
+			});
 		});
-	});
-</script>
+	</script>
+
+
+
+
 }

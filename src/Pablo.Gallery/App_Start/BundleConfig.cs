@@ -18,6 +18,7 @@ namespace Pablo.Gallery
 				"~/Scripts/colorbox/jquery.colorbox.js",
 				"~/Scripts/bootstrap.js",
 				"~/Scripts/imagesloaded.pkgd.js",
+				"~/Scripts/jquery.parseparams.js",
 				"~/Scripts/jsrender.js",
 				"~/Scripts/Site.js"
 			));

@@ -23,16 +23,20 @@ namespace Pablo.Gallery.Api.V0.Controllers
 		readonly Models.GalleryContext db = new Models.GalleryContext();
 
 		[HttpGet]
-		public PackResult Index(int page = 0, int size = Global.DefaultPageSize)
+		public PackResult Index(int? year = null, string query = null, int page = 0, int size = Global.DefaultPageSize)
 		{
-			var packs = from p in db.Packs
+			IQueryable<Pack> packs = from p in db.Packs
 			            orderby p.Date descending
 			            select p;
-			var results = packs.Skip(page * size).Take(size).AsEnumerable();
+			if (year != null)
+				packs = packs.Where(pack => pack.Date.Value.Year == year);
+			if (!string.IsNullOrEmpty(query))
+				packs = packs.Where(pack => pack.FileName.ToLower().Contains(query.ToLower()));
+			var results = size > 0 ? packs.Skip(page * size).Take(size).AsEnumerable() : packs;
 			return new PackResult
 			{
-				Packs = (from p in results
-				        select new PackSummary(p)).ToList()
+				Packs = (from pack in results
+				        select new PackSummary(pack)).ToList()
 			};
 		}
 

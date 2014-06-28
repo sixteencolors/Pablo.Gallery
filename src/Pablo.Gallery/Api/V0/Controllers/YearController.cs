@@ -21,7 +21,7 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			            group p by new { Year = p.Date.Value.Year } into g
 						orderby g.Key.Year descending
 			            select g;
-			var results = years.AsEnumerable().Skip(page * size).Take(size);
+			var results = (size > 0) ? years.AsEnumerable().Skip(page * size).Take(size) : years;
 			return new YearResult
 			{
 				Years = from y in results select new YearSummary(y.Key.Year, y.Count())
