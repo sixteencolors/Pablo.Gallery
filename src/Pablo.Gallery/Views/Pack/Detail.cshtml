@@ -16,7 +16,7 @@
 @section Scripts {
     <script id="file-template" type="text/x-jsrender">
 	<li class="file">
-		<a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.Content("~/"){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.Content("~/"){{attr:downloadUrl}}">
+		<a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
 			<span class="file-image">
 				<img src="@Url.RootUrl(){{attr:previewUrl}}" height="{{attr:previewHeight}}" width="{{attr:previewWidth}}" />
 			</span>
