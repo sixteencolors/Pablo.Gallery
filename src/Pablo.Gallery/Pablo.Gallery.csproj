@@ -292,6 +292,10 @@
     <Compile Include="Migrations\201406250019182_indexes.Designer.cs">
       <DependentUpon>201406250019182_indexes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406271520089_PackDateIndex.cs" />
+    <Compile Include="Migrations\201406271520089_PackDateIndex.Designer.cs">
+      <DependentUpon>201406271520089_PackDateIndex.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\GalleryContext.cs" />
@@ -589,6 +593,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406250019182_indexes.resx">
       <DependentUpon>201406250019182_indexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406271520089_PackDateIndex.resx">
+      <DependentUpon>201406271520089_PackDateIndex.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
