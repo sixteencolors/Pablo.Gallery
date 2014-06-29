@@ -28,7 +28,7 @@ namespace Pablo.Gallery.Api.ApiModels
 		}
 
 		[DataMember(Name = "url")]
-		public string Url { get { return "pack/" + pack.Name; } set { } }
+		public string Url { get { return "/pack/" + pack.Name; } set { } }
 
 		[DataMember(Name = "previewUrl")]
 		public string PreviewUrl { get { return pack.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }

@@ -4,7 +4,7 @@
 }
 
 @section SecondaryHeader {
-    <h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Detail", "Year", new {year = Model.Date.Value.Year}, null)\@Model.Name</h2>
+    <h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Index", "Pack", new {year = Model.Date.Value.Year}, null)\@Model.Name</h2>
     <p>
         <a href="@Url.Content(Model.DownloadUrl())">Download Pack</a>
     </p>
@@ -12,13 +12,13 @@
 <ul id="result" class="files"></ul>
 <div id="loading">Loading...</div>
 
-@Scripts.Render("~/scripts/masonry.pkgd.js")
 @section Scripts {
-    <script id="file-template" type="text/x-jsrender">
+@Scripts.Render("~/Scripts/masonry.pkgd.js")
+<script id="file-template" type="text/x-jsrender">
 	<li class="file">
 		<a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
 			<span class="file-image">
-				<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight && previewHeight}}height="{{attr:previewHeight}}" width="{{attr:previewWidth}}"{{/if}} />
+				<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight}}height="{{attr:previewHeight}}"{{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
 			</span>
 			<span class="file-name">{{>fileName}}</span>
 		</a>

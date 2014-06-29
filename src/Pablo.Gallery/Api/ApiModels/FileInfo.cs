@@ -21,7 +21,7 @@ namespace Pablo.Gallery.Api.ApiModels
 		}
 
 		[DataMember(Name = "url")]
-		public string Url { get { return "pack/" + file.Path; } set { } }
+		public string Url { get { return "/pack/" + file.Path; } set { } }
 
 		[DataMember(Name = "downloadUrl")]
 		public string DownloadUrl { get { return file.DownloadUrl().TrimStart('~'); } set { } }
