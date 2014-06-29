@@ -189,7 +189,7 @@ namespace Pablo.Gallery.Logic
 				{
 					var inStream = stream;
 					MemoryStream memstream = null;
-					//if (!stream.CanSeek)
+					if (!stream.CanSeek)
 					{
 						// need a seekable stream here, some extractors don't return one
 						memstream = new MemoryStream();

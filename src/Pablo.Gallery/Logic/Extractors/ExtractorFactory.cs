@@ -8,10 +8,10 @@ namespace Pablo.Gallery.Logic.Extractors
 	public static class ExtractorFactory
 	{
 		static readonly List<Extractor> extractors = new List<Extractor> {
-			new SevenZipExtractor(), // best at extracting all other files (rar/arj/7z/etc)
 			new SharpZipLibExtractor(), // best at extracting zip info
 			new SharpCompressExtractor(), // good at extracting rar/7z
 			new DotNetZipExtractor(),
+			new SevenZipExtractor(), // best at extracting all other files (rar/arj/7z/etc)
 			new UnzipExtractor(), // best at extracting files from zips, though has some issues on windows so make it last.
 		};
 
