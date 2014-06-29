@@ -8,6 +8,8 @@ $(document).ready(function () {
 	});
 });
 
+function supports_history_api() { return !!(window.history && history.pushState); }
+
 (function ($) {
 	var defaults = {
 		images: null,
@@ -102,6 +104,7 @@ $(document).ready(function () {
 		url: null,
 		error: null,
 		infiniteScroll: true,
+		initialLoad: true,
 		params: {},
 		scrollable: $(window),
 		content: $(document),
@@ -113,14 +116,12 @@ $(document).ready(function () {
 
 	var functions = {
 		load: function (o, loaded) {
-			if (!o.params.Page)
-				o.params.Page = 0;
 			var url = o.url;
 			var data = null;
 			if (o.type == "get")
-				url = url + "?" + $.param(o.params);
+				url = url + "?" + $.param(o.currentParams);
 			else
-				data = JSON.stringify(o.params);
+				data = JSON.stringify(o.currentParams);
 
 			$.ajax({
 				type: o.type,
@@ -136,7 +137,7 @@ $(document).ready(function () {
 						var template = $.templates(o.template);
 						var elements = template.render(data);
 						o.result.append(elements);
-						o.params.Page++;
+						o.currentParams.Page++;
 					}
 					else
 						o.finished = true;
@@ -163,9 +164,12 @@ $(document).ready(function () {
 			o.scrollable = $(o.scrollable);
 			o.content = $(o.content);
 			o.inProgress = true;
-			// do our initial load
-			functions.load(o);
+			o.currentParams = $.extend({ Page: 0 }, o.params);
 			$(this).data('pageloader', o);
+
+			// do our initial load
+			if (o.initialLoad)
+				functions.load(o);
 
 			if (o.infiniteScroll) {
 				// when we reach close to the bottom of the screen, reload
@@ -180,7 +184,7 @@ $(document).ready(function () {
 		},
 		reload: function (params, loaded) {
 			var o = $(this).data('pageloader');
-			o.params = params;
+			o.currentParams = $.extend({ Page: 0 }, params);
 			o.inProgress = true;
 			o.finished = false;
 			$(o.result).empty();

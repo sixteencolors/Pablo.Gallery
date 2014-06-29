@@ -20,7 +20,7 @@
 		<li class="file">
 			<a href="@Url.RootUrl(){{attr:url}}">
 				<span class="file-image">
-					<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight && previewHeight}}height="{{attr:previewHeight}}" width="{{attr:previewWidth}}"{{/if}} />
+					<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight}}height="{{attr:previewHeight}}"{{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
 				</span>
 				<span class="file-name">{{>name}}</span>
 			</a>
@@ -39,22 +39,34 @@
 
 
 		$(function() {
-			$('#query-search').on('click', function() {
-				event.preventDefault();
-				var params = $.parseParams(location.search.substring(1));
-				params.query = $('#query').val();
-				$('#result').pageloader('reload', { year: params.year, query: params.query });
-				var path = location.pathname + '?' + $.param(params);
-				window.history.pushState(params, null, path);
-			});
-			$('#years-result').on('click', '.year-select', function(event) {
-				event.preventDefault();
-				var params = $.parseParams(location.search.substring(1));
-				params.year = $(this).data('year');
-				$('#result').pageloader('reload', { year: params.year, query: params.query });
-				var path = location.pathname + '?' + $.param(params);
-				window.history.pushState(params, null, path);
-			});
+		    var initialParams = @Html.Raw(Json.Encode(ViewBag.Params));
+		    var loaded = false;
+		    if (supports_history_api()) {
+
+				window.onpopstate = function(event) {
+					if (loaded)
+					{
+						$('#query').val(event.state ? event.state.query : '');
+						$('#result').pageloader('reload', event.state ? event.state : initialParams);
+					}
+				};
+				$('#query-search').on('click', function() {
+					event.preventDefault();
+					var params = $.parseParams(location.search.substring(1));
+					params.query = $('#query').val();
+					$('#result').pageloader('reload', { year: params.year, query: params.query });
+					var path = location.pathname + '?' + $.param(params);
+					window.history.pushState(params, null, path);
+				});
+				$('#years-result').on('click', '.year-select', function(event) {
+					event.preventDefault();
+					var params = $.parseParams(location.search.substring(1));
+					params.year = $(this).data('year');
+					$('#result').pageloader('reload', { year: params.year, query: params.query });
+					var path = location.pathname + '?' + $.param(params);
+					window.history.pushState(params, null, path);
+				});
+			}
 
 			$('#years-result').pageloader({
 				url: "@Url.RouteUrl("api", new { httproute="", Controller = "year"})",
@@ -63,12 +75,13 @@
 				selector: function(data) { return data.years; }
 			});
 			$('#result').pageloader({
-				params: @Html.Raw(Json.Encode(ViewBag.Params)),
+				params: initialParams,
 				url: "@Url.RouteUrl("api", new { httproute="", Controller = "pack" })",
 				template: "#pack-template",
 				selector: function(data) { return data.packs; },
 				loading: "#loading",
 				onComplete: function (elements) {
+					loaded = true;
 					var masonry = new Masonry('.files', { });
 				}
 			});
