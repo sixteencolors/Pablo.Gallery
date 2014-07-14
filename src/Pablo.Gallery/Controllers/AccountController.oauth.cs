@@ -102,7 +102,7 @@ namespace Pablo.Gallery.Controllers
 					if (user == null)
 					{
 						// Insert name into the profile table
-						db.Users.Add(new User { UserName = model.UserName });
+						db.Users.Add(new User { UserName = model.UserName, Email = model.UserName, CreateDate = DateTime.UtcNow, IsConfirmed = true });
 						db.SaveChanges();
 
 						OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
@@ -110,10 +110,8 @@ namespace Pablo.Gallery.Controllers
 
 						return RedirectToLocal(returnUrl);
 					}
-					else
-					{
-						ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
-					}
+
+					ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
 				}
 			}
 
@@ -176,6 +174,7 @@ namespace Pablo.Gallery.Controllers
 		{
 			ChangePasswordSuccess,
 			SetPasswordSuccess,
+			SetPasswordError,
 			RemoveLoginSuccess,
 		}
 

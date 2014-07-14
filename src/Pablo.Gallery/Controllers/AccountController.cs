@@ -80,6 +80,7 @@ namespace Pablo.Gallery.Controllers
 			ViewBag.StatusMessage =
 				message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
 				: message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+				: message == ManageMessageId.SetPasswordError ? "Your password could not been set."
 				: message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
 				: "";
 			ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
@@ -133,7 +134,14 @@ namespace Pablo.Gallery.Controllers
 				{
 					try
 					{
-						WebSecurity.CreateAccount(User.Identity.Name, model.NewPassword);
+						var userName = User.Identity.Name;
+						if (WebSecurity.UserExists(userName))
+						{
+							if (!WebSecurity.ChangePassword(userName, null, model.NewPassword))
+								return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordError });
+						}
+						else
+							WebSecurity.CreateAccount(userName, model.NewPassword);
 						return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
 					}
 					catch (Exception)
