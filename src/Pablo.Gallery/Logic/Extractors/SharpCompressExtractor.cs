@@ -43,7 +43,13 @@ namespace Pablo.Gallery.Logic.Extractors
 					FileName = entry.FilePath.Replace('/', '\\'),
 					Size = (int)entry.Size,
 					Order = order++,
-					GetStream = currentEntry.OpenEntryStream
+					GetStream = () =>
+					{
+						var ms = new MemoryStream((int)entry.Size);
+						currentEntry.WriteTo(ms);
+						ms.Position = 0;
+						return ms;
+					}
 				};
 			}
 		}

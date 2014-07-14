@@ -183,63 +183,52 @@ namespace Pablo.Gallery.Logic
 				file.Type = FileType.Character.Name;
 			}
 
-			using (var stream = getStream())
+			var infoParameters = new PabloDraw.InputParameters
 			{
-				if (stream != null)
-				{
-					var inStream = stream;
-					MemoryStream memstream = null;
-					if (!stream.CanSeek)
-					{
-						// need a seekable stream here, some extractors don't return one
-						memstream = new MemoryStream();
-						stream.CopyTo(memstream);
-						memstream.Position = 0;
-						inStream = memstream;
-					}
-					if (file.Type == FileType.Character.Name)
-					{
-						if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
-						{
-							using (var outStream = new MemoryStream())
-							{
-								var parameters = new PabloDraw.ConvertParameters
-								{
-									InputStream = inStream,
-									InputFormat = file.Format,
-									InputFileName = file.FileName,
-									OutputFormat = "ascii",
-									OutputStream = outStream
-								};
+				InputFormat = file.Format,
+				InputFileName = file.FileName
+			};
 
-								Global.PabloEngine.Convert(parameters);
-								outStream.Position = 0;
-								using (var reader = new StreamReader(outStream, Encoding.GetEncoding(437)))
+			if (Global.PabloEngine.SupportsFile(infoParameters))
+			{
+				using (var stream = getStream())
+				{
+					if (stream != null)
+					{
+						if (file.Type == FileType.Character.Name)
+						{
+							if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
+							{
+								using (var outStream = new MemoryStream())
 								{
-									var content = file.Content ?? (file.Content = new FileContent { File = file });
-									content.Text = reader.ReadToEnd().Replace((char)0, ' ');
+									var parameters = new PabloDraw.ConvertParameters
+									{
+										InputStream = stream,
+										InputFormat = file.Format,
+										InputFileName = file.FileName,
+										OutputFormat = "ascii",
+										OutputStream = outStream
+									};
+
+									Global.PabloEngine.Convert(parameters);
+									outStream.Position = 0;
+									using (var reader = new StreamReader(outStream, Encoding.GetEncoding(437)))
+									{
+										var content = file.Content ?? (file.Content = new FileContent { File = file });
+										content.Text = reader.ReadToEnd().Replace((char)0, ' ');
+									}
+									stream.Position = 0;
 								}
-								inStream.Position = 0;
 							}
 						}
-					}
-					else if (file.Content != null)
-						file.Content = null;
+						else if (file.Content != null)
+							file.Content = null;
 
-					var infoParameters = new PabloDraw.InputParameters
-					{
-						InputStream = inStream,
-						InputFormat = file.Format,
-						InputFileName = file.FileName
-					};
-					if (Global.PabloEngine.SupportsFile(infoParameters))
-					{
+						infoParameters.InputStream = stream;
 						var info = Global.PabloEngine.GetInfo(infoParameters);
 						file.Width = info.ImageWidth;
 						file.Height = info.ImageHeight;
 					}
-					if (memstream != null)
-						memstream.Dispose();
 				}
 			}
 

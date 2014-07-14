@@ -38,12 +38,12 @@ namespace Pablo.Gallery.Logic.Extractors
 					{
 						exceptions = exceptions ?? new List<Exception>();
 						exceptions.Add(ex);
-						if (i == extractors.Length - 1)
-							throw new AggregateException("Could not extract file", exceptions);
 					}
 				}
 			}
-			throw new InvalidOperationException();
+			if (exceptions.Count > 0)
+				throw new AggregateException("Could not extract file", exceptions);
+			throw new InvalidOperationException("No enabled extractors found");
 		}
 
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
@@ -51,19 +51,23 @@ namespace Pablo.Gallery.Logic.Extractors
 			List<Exception> exceptions = null;
 			for (int i = 0; i < extractors.Length; i++)
 			{
-				try
+				var extractor = extractors[i];
+				if (extractor.Enabled && extractor.CanExtractInfo)
 				{
-					return extractors[i].ExtractInfo(archiveFileName);
-				}
-				catch (Exception ex)
-				{
-					exceptions = exceptions ?? new List<Exception>();
-					exceptions.Add(ex);
-					if (i == extractors.Length - 1)
-						throw new AggregateException("Could not extract file", exceptions);
+					try
+					{
+						return extractors[i].ExtractInfo(archiveFileName);
+					}
+					catch (Exception ex)
+					{
+						exceptions = exceptions ?? new List<Exception>();
+						exceptions.Add(ex);
+					}
 				}
 			}
-			throw new InvalidOperationException();
+			if (exceptions.Count > 0)
+				throw new AggregateException("Could not extract info", exceptions);
+			throw new InvalidOperationException("No enabled extractors found");
 		}
 
 		public override bool CanExtractInfo
