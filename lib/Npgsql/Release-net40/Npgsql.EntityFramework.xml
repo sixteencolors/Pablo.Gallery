@@ -20,31 +20,18 @@
             <summary>
             Removes schema prefix e.g. "dto.Blogs" returns "Blogs" and "Posts" returns "Posts"
             </summary>
-            <param name="tableName">
-            </param>
-            <returns>
-            </returns>
+            <param name="tableName"></param>
+            <returns></returns>
         </member>
-        <member name="M:Npgsql.SqlGenerators.SqlBaseGenerator.GetColumnsForJoin(Npgsql.SqlGenerators.JoinExpression,Npgsql.SqlGenerators.ProjectionExpression,Npgsql.SqlGenerators.VisitedExpression)">
+        <member name="T:Npgsql.SqlGenerators.NameAndInputExpression">
             <summary>
-            Given a join expression and a projection, fetch all columns in the projection
-            that reference columns in the join.
+            Represents an InputExpression and what alias it will have when used in a FROM clause
             </summary>
         </member>
-        <member name="M:Npgsql.SqlGenerators.SqlBaseGenerator.GetFromNames(Npgsql.SqlGenerators.InputExpression,System.Collections.Generic.List{System.String})">
+        <member name="T:Npgsql.SqlGenerators.PendingProjectsNode">
             <summary>
-            Given an InputExpression append all from names (including nested joins) to the list.
-            </summary>
-        </member>
-        <member name="M:Npgsql.SqlGenerators.SqlBaseGenerator.GetReplacementColumn(Npgsql.SqlGenerators.JoinExpression,Npgsql.SqlGenerators.ColumnExpression)">
-            <summary>
-            Get new ColumnExpression that will be used in projection that had it's existing columns moved.
-            These should be simple references to the inner column
-            </summary>
-        </member>
-        <member name="M:Npgsql.SqlGenerators.SqlBaseGenerator.AdjustPropertyAccess(Npgsql.SqlGenerators.ColumnExpression[],System.String)">
-            <summary>
-            Every property accessed in the list of columns must be adjusted for a new scope
+            A tree of subqueries, used when evaluating SQL text for DbPropertyExpressions in SqlSelectGenerator.
+            See SqlSelectGenerator.Visit(DbPropertyExpression) for more information.
             </summary>
         </member>
         <member name="M:Npgsql.SqlGenerators.SqlBaseGenerator.DateAdd(System.String,System.Collections.Generic.IList{System.Data.Entity.Core.Common.CommandTrees.DbExpression})">
@@ -56,12 +43,14 @@
             expression + number * INTERVAL '1 number_type'
             where number_type is the number type (days, years and etc)
             </summary>
-            <param name="functionName">
-            </param>
-            <param name="args">
-            </param>
-            <returns>
-            </returns>
+            <param name="functionName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Npgsql.SqlGenerators.StringPair">
+            <summary>
+            Used for lookup in a Dictionary, since Tuple is not available in .NET 3.5
+            </summary>
         </member>
     </members>
 </doc>

@@ -1,10 +1,13 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.Infrastructure.Interception;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Data.Entity.Migrations.History;
+using System.Text;
+using Pablo.Gallery.Logic.Interceptors;
 
 namespace Pablo.Gallery.Models
 {
@@ -23,6 +26,7 @@ namespace Pablo.Gallery.Models
 		public GalleryContext()
 			: base("Gallery")
 		{
+			DbInterception.Add(new FullTextSearchInterceptor());
 			//var entity = ObjectContext.MetadataWorkspace.GetEntityContainer(ObjectContext.DefaultContainerName, DataSpace.CSpace)
 			//	.BaseEntitySets.First(r => r.Name == "File");
 		}

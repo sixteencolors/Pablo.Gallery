@@ -2,10 +2,12 @@
     ViewBag.Title = "File Results";
 }
 
-@using (Html.BeginForm("Index", "File", FormMethod.Get))
-{
-    @Html.TextBox("query")
-    <input type="submit" value="Search"/>
+@using (Html.BeginForm("Index", "File", FormMethod.Get)) {
+	<ul>
+		<li>@Html.Label("Keyword", new { @for = "keyword" }) @Html.TextBox("keyword")</li>
+		<li>@Html.Label("File Name", new { @for = "query" }) @Html.TextBox("query")</li>
+	</ul>
+    <input type="submit" value="Search" class="btn"/>
 }
 <ul id="result" class="files"></ul>
 <div id="loading">Loading...</div>

@@ -1,14 +1,8 @@
 ﻿using Pablo.Gallery.Api.ApiModels;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Web;
 using System.Web.Http;
-using System.Data.Entity.Core.Metadata.Edm;
+using Pablo.Gallery.Logic.Interceptors;
 
 namespace Pablo.Gallery.Api.V0.Controllers
 {
@@ -17,10 +11,11 @@ namespace Pablo.Gallery.Api.V0.Controllers
 		readonly Models.GalleryContext db = new Models.GalleryContext();
 
 		[HttpGet]
-		public IEnumerable<FileSummary> Index(string format = null, string type = null, string query = null, int page = 0, int pageSize = Global.DefaultPageSize)
+		public IEnumerable<FileSummary> Index(string format = null, string type = null, string query = null, int page = 0, int pageSize = Global.DefaultPageSize, string keyword = null)
 		{
-			var files = db.QueryFiles(format, type, query);
-			return (from f in files.Skip(page * pageSize).Take(pageSize).AsEnumerable()
+			var s = FullTextSearchInterceptor.Search(keyword);
+			var files = db.QueryFiles(format, type, query).Where(f => f.Content.Text.Contains(s));
+			return (from f in files.Skip(page*pageSize).Take(pageSize).AsEnumerable()
 				select new FileSummary(f)).ToArray();
 		}
 

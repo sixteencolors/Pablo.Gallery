@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Pablo.Gallery.Models;
+
 namespace Pablo.Gallery.Migrations
 {
     using System;
@@ -10,6 +13,9 @@ namespace Pablo.Gallery.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+
+			// Register custom generator for Full Text Indexes
+			SetSqlGenerator("Npgsql", new PabloSqlServerMigrationSqlGenerator());
         }
 
         protected override void Seed(Pablo.Gallery.Models.GalleryContext context)
