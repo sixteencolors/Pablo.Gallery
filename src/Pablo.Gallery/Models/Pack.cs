@@ -19,6 +19,10 @@ namespace Pablo.Gallery.Models
 
 		public virtual File Thumbnail { get; set; }
 
+		[InverseProperty("Packs")]
+		public virtual Group Group { get; set; }
+		public virtual ICollection<Tag> Tags { get; set; }
+
 		[NotMapped]
 		public string NativeFileName
 		{

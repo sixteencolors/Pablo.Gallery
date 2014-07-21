@@ -264,14 +264,21 @@
     <Compile Include="Migrations\201407131140228_ContentFTS.Designer.cs">
       <DependentUpon>201407131140228_ContentFTS.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407202040430_AddMetadata.cs" />
+    <Compile Include="Migrations\201407202040430_AddMetadata.Designer.cs">
+      <DependentUpon>201407202040430_AddMetadata.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Extensions.cs" />
     <Compile Include="Migrations\PabloSqlServerMigrationSqlGenerator.cs" />
+    <Compile Include="Models\Artist.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\GalleryContext.cs" />
     <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\Pack.cs" />
+    <Compile Include="Models\Tag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\ScannerController.cs" />
     <Compile Include="Logic\Extensions.cs" />
@@ -567,6 +574,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407131140228_ContentFTS.resx">
       <DependentUpon>201407131140228_ContentFTS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407202040430_AddMetadata.resx">
+      <DependentUpon>201407202040430_AddMetadata.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

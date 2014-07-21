@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Core.Objects.DataClasses;
@@ -28,8 +30,11 @@ namespace Pablo.Gallery.Models
 		public int? Width { get; set; }
 
 		public int? Height { get; set; }
-
-		[NotMapped]
+		[InverseProperty("Files")]
+		public virtual ICollection<Artist> Artists { get; set; }
+		public string Title { get; set; }
+		[InverseProperty("Files")]
+		public virtual ICollection<Tag> Tags { get; set; }
 		public string NativeFileName
 		{
 			get { return Logic.Scanner.NativePath(FileName); }

@@ -95,6 +95,27 @@ namespace Pablo.Gallery.Models
 				m.MapRightKey("Role_Id");
 				m.ToTable("User_Role", Schema);
 			});
+
+			modelBuilder.Entity<File>().
+				HasMany(c => c.Artists).
+				WithMany(f => f.Files).
+				Map(m =>
+			{
+				m.MapLeftKey("File_Id");
+				m.MapRightKey("Artist_Id");
+				m.ToTable("File_Artist", Schema);
+			});
+
+			modelBuilder.Entity<File>().
+				HasMany(c => c.Tags).
+				WithMany(p => p.Files).
+				Map(m =>
+			{
+				m.MapLeftKey("File_Id");
+				m.MapRightKey("Tag_Id");
+				m.ToTable("File_Tag", Schema);
+			});
+
 		}
 	}
 }
