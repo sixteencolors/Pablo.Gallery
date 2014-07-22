@@ -44,9 +44,15 @@ body {
 		padding-right: 0;
 	}
 	word-wrap:break-word;
+	p {
+		padding: 0 2em;
+		width: 80em;
+		line-height: 3em;
+		margin: 0 auto;
+	}
 }
 
-.page-pack-detail, .page-year-detail, .page-file-index, .page-pack-index
+.page-pack-detail, .page-year-detail, .page-file-index, .page-pack-index, .page-home-index
 {
 	.files {
 		.clearfix();
@@ -120,6 +126,21 @@ body {
 			}
 		}
 
+	}
+
+}
+
+.page-home-index {
+	.files {
+		width: 600px;
+		margin: 0 auto;
+		li.file {
+			float:left;
+			.file-image {
+				height: 160px;
+				overflow: hidden;
+			}
+		}
 	}
 }
 
@@ -222,4 +243,8 @@ h2 {
     /* vertical-align: middle; */
     /* position: relative; */
     color: @gray_i;
+}
+
+#Welcome {
+	margin-top:2em;
 }

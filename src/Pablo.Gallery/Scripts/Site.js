@@ -108,7 +108,8 @@ $(document).ready(function () {
 		loading: null,
 		selector: null,
 		closeness: $(window).height(),
-        onComplete: null
+		onComplete: null,
+		enableScroll: true
 	};
 
 	var o;
@@ -117,12 +118,13 @@ $(document).ready(function () {
 		  	load: function(loaded) {
 		  		var url = o.url;
 		  		var data = null;
-		  		if (o.type == "get")
-		  			url = url + "?" + $.param(o.params);
-		  		else
-					data = JSON.stringify(o.params);
+		  		  if (o.type == "get") {
+					  url += (url.indexOf("?") > -1 ? "&" : "?") + $.param(o.params); // Simplistic check to see if there are existing querystring params
+				  } else {
+					  data = JSON.stringify(o.params);
+				  }
 
-				$.ajax({
+				  $.ajax({
 					type: o.type,
 					url: url,
 					async: true,
@@ -167,7 +169,7 @@ $(document).ready(function () {
 
 			// when we reach close to the bottom of the screen, reload
 			o.scrollable.scroll(function () {
-				if (!o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
+				if (o.enableScrolle && !o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
 					methods.load();
 				}
 			});
