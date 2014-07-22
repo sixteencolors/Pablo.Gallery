@@ -17,7 +17,7 @@ namespace Pablo.Gallery.Logic.Converters
 		};
 		public static Converter GetConverter(ConvertInfo info)
 		{
-			return converters.FirstOrDefault(r => r.CanConvert(info));
+			return converters.FirstOrDefault(r => r.Enabled && r.CanConvert(info));
 		}
 	}
 }

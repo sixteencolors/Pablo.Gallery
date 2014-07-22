@@ -117,16 +117,18 @@ namespace Pablo.Gallery.Logic.Membership
 			{
 				var token = requireConfirmation ? GenerateToken() : null;
 				var date = DateTime.UtcNow;
-				var user = new Models.User
-				{
-					CreateDate = date,
-					PasswordChangedDate = date,
-					UserName = userName,
-					Email = emailAsUserName ? userName : null,
-					Password = EncodePassword(password),
-					ConfirmationToken = token,
-					IsConfirmed = !requireConfirmation
-				};
+				var user = db.Users.FirstOrDefault(r => r.UserName == userName);
+				if (user != null)
+					throw new MembershipCreateUserException(MembershipCreateStatus.DuplicateUserName);
+
+				user = new Models.User { CreateDate = date };
+				user.UserName = userName;
+				user.ConfirmationToken = token;
+				user.IsConfirmed = !requireConfirmation;
+				user.PasswordChangedDate = date;
+				user.Password = EncodePassword(password);
+				user.Email = emailAsUserName ? userName : null;
+				db.Users.Add(user);
 				if (values != null)
 				{
 					object val;
@@ -136,7 +138,6 @@ namespace Pablo.Gallery.Logic.Membership
 						user.Email = (string)val;
 
 				}
-				db.Users.Add(user);
 				db.SaveChanges();
 				return token;
 			}
@@ -245,6 +246,7 @@ namespace Pablo.Gallery.Logic.Membership
 					return false;
 				user.Password = EncodePassword(newPassword);
 				user.PasswordChangedDate = DateTime.UtcNow;
+				db.SaveChanges();
 				return true;
 			}
 		}
@@ -552,12 +554,14 @@ namespace Pablo.Gallery.Logic.Membership
 		{
 			using (var db = Database())
 			{
-				return db.Users.Any(r => r.Id == userId);
+				return db.Users.Any(r => r.Id == userId && !string.IsNullOrEmpty(r.Password));
 			}
 		}
 
 		string EncodePassword(string password)
 		{
+			if (password == null)
+				return null;
 			string encodedPassword = password;
 
 			switch (PasswordFormat)
@@ -581,6 +585,8 @@ namespace Pablo.Gallery.Logic.Membership
 
 		string UnEncodePassword(string encodedPassword)
 		{
+			if (encodedPassword == null)
+				return null;
 			string password = encodedPassword;
 
 			switch (PasswordFormat)

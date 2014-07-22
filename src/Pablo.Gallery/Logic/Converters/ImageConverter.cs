@@ -17,6 +17,8 @@ namespace Pablo.Gallery.Logic.Converters
 			this.convertPath = convertPath ?? ConfigurationManager.AppSettings["ImageMagickPath"];
 		}
 
+		public override bool Enabled { get { return !string.IsNullOrEmpty(convertPath); } }
+
 		public override bool CanConvert(ConvertInfo info)
 		{
 			return !string.IsNullOrEmpty(convertPath) && info.InputType == Models.FileType.Image.Name;

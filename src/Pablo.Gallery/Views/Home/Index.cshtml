@@ -16,7 +16,7 @@
 @section Scripts {
     <script id="pack-template" type="text/x-jsrender">
         <li class="file">
-            <a href="@Url.Content("~/"){{attr:url}}">
+            <a href="@Url.Content("~/").TrimEnd('/') {{attr:url}}">
                 <span class="file-image">
                     <img src="{{attr:previewUrl}}" />
                 </span>

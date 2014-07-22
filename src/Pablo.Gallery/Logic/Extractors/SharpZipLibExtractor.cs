@@ -16,6 +16,8 @@ namespace Pablo.Gallery.Logic.Extractors
 			return extension == ".zip";
 		}
 
+		public override bool Enabled { get { return true; } }
+
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
 		{
 			using (var archive = new ZipFile(archiveFileName))
@@ -45,7 +47,16 @@ namespace Pablo.Gallery.Logic.Extractors
 					Size = (int)entry.Size,
 					Order = order++,
 					Comment = entry.Comment,
-					GetStream = () => currentArchive.GetInputStream(currentEntry)
+					GetStream = () =>
+					{
+						using (var stream = currentArchive.GetInputStream(currentEntry))
+						{
+							var ms = new MemoryStream((int)entry.Size);
+							stream.CopyTo(ms);
+							ms.Position = 0;
+							return ms;
+						}
+					}
 				};
 			}
 		}
@@ -54,7 +65,17 @@ namespace Pablo.Gallery.Logic.Extractors
 		{
 			var archive = new ZipFile(archiveFileName);
 			var entry = archive.GetEntry(fileName.Replace('\\', '/'));
-			return entry != null ? archive.GetInputStream(entry) : null;
+			if (entry != null)
+			{
+				using (var stream = archive.GetInputStream(entry))
+				{
+					var ms = new MemoryStream((int)entry.Size);
+					stream.CopyTo(ms);
+					ms.Position = 0;
+					return ms;
+				}
+			}
+			return null;
 		}
 	}
 }

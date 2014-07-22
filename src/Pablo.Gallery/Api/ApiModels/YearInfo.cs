@@ -25,7 +25,7 @@ namespace Pablo.Gallery.Api.ApiModels
 		public YearSummary(int year, int packs)
 		{
 			Year = year;
-			Url = "year/" + year;
+			Url = "/year/" + year;
 			Packs = packs;
 		}
 	}

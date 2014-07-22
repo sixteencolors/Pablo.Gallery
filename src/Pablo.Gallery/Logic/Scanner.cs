@@ -26,7 +26,7 @@ namespace Pablo.Gallery.Logic
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
 
-			var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation);
+			var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r);
 			//dirs = dirs.SkipWhile(r => !r.EndsWith("1996", StringComparison.InvariantCultureIgnoreCase));
 			//dirs = dirs.Where(r => r.EndsWith("1997", StringComparison.OrdinalIgnoreCase));
 			foreach (var dir in dirs)
@@ -71,21 +71,21 @@ namespace Pablo.Gallery.Logic
 							var pack = db.Packs.FirstOrDefault(r => r.FileName.ToLower() == packShortFile.ToLower());
 							if (pack == null)
 							{
-							    var name = Path.GetFileNameWithoutExtension(packFileEntry);
-                                if (db.Packs.Any(p =>p.Name == name))
-							    {
-							        updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
-							            packShortFile.ToLower()));
-							        continue;
-							    }
+								var name = Path.GetFileNameWithoutExtension(packFileEntry);
+								if (db.Packs.Any(p => p.Name == name))
+								{
+									updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
+										packShortFile.ToLower()));
+									continue;
+								}
 								pack = new Pack
 								{
 									Name = CanonicalName(Path.GetFileNameWithoutExtension(packFileEntry)),
 									FileName = packShortFile,
 									Date = date
 								};
-                                db.Packs.Add(pack);
-							    db.SaveChanges();
+								db.Packs.Add(pack);
+								db.SaveChanges();
 							}
 							else
 							{
@@ -109,8 +109,8 @@ namespace Pablo.Gallery.Logic
 										updateStatus(string.Format("Error extracting file '{0}', {1}", fileInfo.FileName, ex));
 									}
 								}
-								var fileNames = files.Select(r=> Scanner.NormalizedPath(r.FileName).TrimStart('\\')).ToArray();
-								foreach (var file in pack.Files.Where(r => !fileNames.Contains(r.FileName)))
+								var fileNames = files.Select(r => Scanner.NormalizedPath(r.FileName).TrimStart('\\')).ToArray();
+								foreach (var file in pack.Files.Where(r => !fileNames.Contains(r.FileName)).ToList())
 								{
 									db.Files.Remove(file);
 								}
@@ -183,35 +183,54 @@ namespace Pablo.Gallery.Logic
 				file.Type = FileType.Character.Name;
 			}
 
-			if (file.Type == FileType.Character.Name)
+			var infoParameters = new PabloDraw.InputParameters
 			{
-                if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
-				{
-					using (var stream = getStream())
-					{
-						using (var outStream = new MemoryStream())
-						{
-							var parameters = new PabloDraw.ConvertParameters
-							{
-								InputStream = stream,
-								InputFormat = file.Format,
-								OutputFormat = "ascii",
-								OutputStream = outStream
-							};
+				InputFormat = file.Format,
+				InputFileName = file.FileName
+			};
 
-							Global.PabloEngine.Convert(parameters);
-							outStream.Position = 0;
-							using (var reader = new StreamReader(outStream, Encoding.GetEncoding(437)))
+			if (Global.PabloEngine.SupportsFile(infoParameters))
+			{
+				using (var stream = getStream())
+				{
+					if (stream != null)
+					{
+						if (file.Type == FileType.Character.Name)
+						{
+							if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
 							{
-								var content = file.Content ?? (file.Content = new FileContent { File = file });
-								content.Text = reader.ReadToEnd().Replace((char)0, ' ');
+								using (var outStream = new MemoryStream())
+								{
+									var parameters = new PabloDraw.ConvertParameters
+									{
+										InputStream = stream,
+										InputFormat = file.Format,
+										InputFileName = file.FileName,
+										OutputFormat = "ascii",
+										OutputStream = outStream
+									};
+
+									Global.PabloEngine.Convert(parameters);
+									outStream.Position = 0;
+									using (var reader = new StreamReader(outStream, Encoding.GetEncoding(437)))
+									{
+										var content = file.Content ?? (file.Content = new FileContent { File = file });
+										content.Text = reader.ReadToEnd().Replace((char)0, ' ');
+									}
+									stream.Position = 0;
+								}
 							}
 						}
+						else if (file.Content != null)
+							file.Content = null;
+
+						infoParameters.InputStream = stream;
+						var info = Global.PabloEngine.GetInfo(infoParameters);
+						file.Width = info.ImageWidth;
+						file.Height = info.ImageHeight;
 					}
 				}
 			}
-			else if (file.Content != null)
-				file.Content = null;
 
 			return file;
 		}

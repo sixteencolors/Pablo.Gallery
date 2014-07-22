@@ -17,12 +17,6 @@ namespace Pablo.Gallery
                 constraints: new { year = @"^\d{4}$" }
 			);
 
-            // Legacy Sixteen Colors route
-            routes.MapRoute(
-		        name: "PackIndex",
-		        url: "pack/",
-		        defaults: new {controller = "Year", action = "Index"});
-
 			routes.MapRoute(
 				name: "Pack",
 				url: "pack/{pack}",

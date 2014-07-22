@@ -16,6 +16,8 @@ namespace Pablo.Gallery.Logic.Extractors
 			return extension == ".zip";
 		}
 
+		public override bool Enabled { get { return true; } }
+
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
 		{
 			using (var archive = new ZipFile(archiveFileName))
@@ -46,7 +48,7 @@ namespace Pablo.Gallery.Logic.Extractors
 					Comment = entry.Comment,
 					GetStream = () =>
 					{
-						var stream = new MemoryStream();
+						var stream = new MemoryStream((int)entry.UncompressedSize);
 						try
 						{
 							currentEntry.Extract(stream);

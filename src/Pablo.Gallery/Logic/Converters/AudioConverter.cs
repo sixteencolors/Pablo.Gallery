@@ -19,6 +19,8 @@ namespace Pablo.Gallery.Logic.Converters
 			this.ffmpegPath = ffmpegPath ?? ConfigurationManager.AppSettings["FFmpegPath"];
 		}
 
+		public override bool Enabled { get { return !string.IsNullOrEmpty(ffmpegPath); } }
+
 		static readonly string[] inputFormats = { ".mp3", ".ogg", ".oga", ".voc" };
 		static readonly string[] outputFormats = { ".mp3", ".ogg", ".oga" };
 

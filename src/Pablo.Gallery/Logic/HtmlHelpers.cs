@@ -46,6 +46,11 @@ namespace Pablo.Gallery
 		{
 			return MvcHtmlString.Create(string.Join(Environment.NewLine, ScriptBlock.PageScripts));
 		}
+
+		public static string RootUrl(this UrlHelper helper)
+		{
+			return helper.Content("~/").TrimEnd('/');
+		}
 	}
 }
 

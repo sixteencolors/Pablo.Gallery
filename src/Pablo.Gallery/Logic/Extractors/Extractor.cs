@@ -24,6 +24,8 @@ namespace Pablo.Gallery.Logic.Extractors
 
 	public abstract class Extractor
 	{
+		public abstract bool Enabled { get; }
+
 		public abstract bool CanExtractInfo { get; }
 
 		public abstract bool CanExtractFile(string extension);
@@ -32,16 +34,19 @@ namespace Pablo.Gallery.Logic.Extractors
 
 		public virtual async Task ExtractFile(string archiveFileName, string fileName, string destinationFileName)
 		{
-			var stream = await ExtractFile(archiveFileName, fileName);
-			if (stream != null)
+			using (var stream = await ExtractFile(archiveFileName, fileName))
 			{
-				using (var fileStream = File.Create(destinationFileName))
+				if (stream != null)
 				{
-					stream.CopyTo(fileStream);
+					using (var fileStream = File.Create(destinationFileName))
+					{
+						stream.CopyTo(fileStream);
+						fileStream.Close();
+					}
 				}
+				else
+					throw new Exception(string.Format("Error extracting file '{0}' from archive '{1}'", fileName, archiveFileName));
 			}
-			else
-				throw new Exception(string.Format("Error extracting file '{0}' from archive '{1}'", fileName, archiveFileName));
 		}
 
 		public abstract ExtractArchiveInfo ExtractInfo(string archiveFileName);

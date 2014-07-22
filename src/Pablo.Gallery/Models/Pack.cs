@@ -42,6 +42,7 @@ namespace Pablo.Gallery.Models
 			return file;
 		}
 
+		[Index("Date")]
 		public DateTime? Date { get; set; }
 
 		public virtual ICollection<Category> Categories { get; set; }
