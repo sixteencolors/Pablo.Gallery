@@ -20,7 +20,7 @@ namespace Pablo.Gallery.Api.V0.Controllers
 				var s = FullTextSearchInterceptor.Search(keyword);
 				files = files.Where(f => f.Content.Text.Contains(s));
 			} 
-			var result = (from f in files.Skip(page * pageSize).Take(pageSize).AsEnumerable()
+			var result = (from f in files.DistinctBy(f => f.Id).Skip(page * pageSize).Take(pageSize).AsEnumerable()
 					select new FileSummary(f)).ToArray();
 			return result;
 		}
