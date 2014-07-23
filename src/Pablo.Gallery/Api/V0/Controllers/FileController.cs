@@ -1,8 +1,10 @@
-﻿using Pablo.Gallery.Api.ApiModels;
+﻿using Microsoft.Ajax.Utilities;
+using Pablo.Gallery.Api.ApiModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Pablo.Gallery.Logic.Interceptors;
+using Pablo.Gallery.Models;
 
 namespace Pablo.Gallery.Api.V0.Controllers
 {
@@ -13,10 +15,14 @@ namespace Pablo.Gallery.Api.V0.Controllers
 		[HttpGet]
 		public IEnumerable<FileSummary> Index(string format = null, string type = null, string query = null, int page = 0, int pageSize = Global.DefaultPageSize, string keyword = null)
 		{
-			var s = FullTextSearchInterceptor.Search(keyword);
-			var files = db.QueryFiles(format, type, query).Where(f => f.Content.Text.Contains(s));
-			return (from f in files.Skip(page*pageSize).Take(pageSize).AsEnumerable()
-				select new FileSummary(f)).ToArray();
+			var files = db.QueryFiles(format, type, query);
+			if (!string.IsNullOrEmpty(keyword)) {
+				var s = FullTextSearchInterceptor.Search(keyword);
+				files = files.Where(f => f.Content.Text.Contains(s));
+			} 
+			var result = (from f in files.Skip(page * pageSize).Take(pageSize).AsEnumerable()
+					select new FileSummary(f)).ToArray();
+			return result;
 		}
 
 		protected override void Dispose(bool disposing)
