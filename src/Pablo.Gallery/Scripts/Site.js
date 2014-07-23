@@ -177,8 +177,8 @@ function supports_history_api() { return !!(window.history && history.pushState)
 			if (o.infiniteScroll) {
 			// when we reach close to the bottom of the screen, reload
 			o.scrollable.scroll(function () {
-				if (o.enableScrolle && !o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
-					methods.load();
+				if (o.enableScroll && !o.finished && !o.inProgress && o.scrollable.scrollTop() > o.content.height() - o.scrollable.height() - o.closeness) {
+					methods.load(o.result, null);
 				}
 			});
 			}
@@ -195,12 +195,12 @@ function supports_history_api() { return !!(window.history && history.pushState)
 			$(o.loading).show();
 			functions.load(o, loaded);
 		},
-		load: function (loaded) {
-			var o = $(this).data('pageloader');
+		load: function (result) {
+			var o = result.data('pageloader');
 			if (!o.finished && !o.inProgress) {
 			    o.inProgress = true;
 			    $(o.loading).show();
-				functions.load(o, loaded);
+				functions.load(o, null);
 			} 
 		}
 	};
