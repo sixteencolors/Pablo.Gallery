@@ -68,6 +68,17 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Exceptionless, Version=1.5.2092.0, Culture=neutral, PublicKeyToken=fc181f0a46f65747, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Exceptionless.1.5.2092\lib\net40\Exceptionless.dll</HintPath>
+    </Reference>
+    <Reference Include="Exceptionless.Models, Version=1.5.2092.0, Culture=neutral, PublicKeyToken=fc181f0a46f65747, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Exceptionless.1.5.2092\lib\net40\Exceptionless.Models.dll</HintPath>
+    </Reference>
+    <Reference Include="Exceptionless.Mvc">
+      <HintPath>..\packages\Exceptionless.Mvc.1.5.2092\lib\net40\Exceptionless.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="HibernatingRhinos.Profiler.Appender">
       <HintPath>..\..\..\..\tools\EFProfiler\HibernatingRhinos.Profiler.Appender.dll</HintPath>
     </Reference>
