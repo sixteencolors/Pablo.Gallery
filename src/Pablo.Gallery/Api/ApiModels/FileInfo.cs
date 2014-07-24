@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.IO;
 using System.Text;
@@ -27,10 +28,16 @@ namespace Pablo.Gallery.Api.ApiModels
 		public string DownloadUrl { get { return file.DownloadUrl().TrimStart('~'); } set { } }
 
 		[DataMember(Name = "previewUrl")]
-		public string PreviewUrl { get { return file.PreviewUrl(maxWidth: 320).TrimStart('~'); } set { } }
+		public string PreviewUrl { get { return file.PreviewUrl(maxWidth: WebConfigurationManager.AppSettings.AllKeys.Contains("PreviewUrlMaxWidth") ? int.Parse(WebConfigurationManager.AppSettings.Get("PreviewUrlMaxWidth")) : 320).TrimStart('~'); } set { } }
 
 		[DataMember(Name = "previewWidth")]
-		public int? PreviewWidth { get { return file.Width != null ? (int?)Math.Min(file.Width.Value, 160) : null; } set { } }
+		public int? PreviewWidth { get
+		{
+			var width = WebConfigurationManager.AppSettings.AllKeys.Contains("PreviewWidth") ? int.Parse(WebConfigurationManager.AppSettings.Get("PreviewWidth")) : 160;
+			var isStatic = WebConfigurationManager.AppSettings.AllKeys.Contains("IsPreviewWidthStatic") && Convert.ToBoolean(WebConfigurationManager.AppSettings.Get("IsPreviewWidthStatic")) || !WebConfigurationManager.AppSettings.AllKeys.Contains("IsPreviewWidthStatic");
+			return file.Width != null ? isStatic ? (int?)Math.Min(file.Width.Value, width) : file.Width > 640 ? width *2 : width : null;
+		}
+			set { } }
 
 		[DataMember(Name = "previewHeight")]
 		public int? PreviewHeight
