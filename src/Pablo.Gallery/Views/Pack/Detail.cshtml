@@ -2,7 +2,7 @@
 @model Pablo.Gallery.Models.Pack
 @{
     ViewBag.Title = "Pack " + Model.Name;
-	ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl());	
+	ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl(maxWidth: 320));	
 }
 
 @section SecondaryHeader {
