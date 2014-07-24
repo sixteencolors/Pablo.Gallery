@@ -1,4 +1,5 @@
 ﻿@using System.Web.Configuration
+@using System.Web.UI.WebControls
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,6 +7,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewBag.Title - @WebConfigurationManager.AppSettings["ApplicationNameLong"]</title>
 	@Styles.Render("~/Content/css")
+	<meta property="og:title" content="@ViewBag.Title" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="@WebConfigurationManager.AppSettings["ApplicationNameLong"]"><meta property="og:url" content="@Request.Url.AbsoluteUri" />
+	<meta property="og:description" content="@WebConfigurationManager.AppSettings["SiteDescription"]" />
+	@if (!string.IsNullOrEmpty(ViewBag.PreviewImageUrl))
+	{
+	<meta property="og:image" content="@ViewBag.PreviewImageUrl" />
+	}
 </head>
 <body>
 @{
