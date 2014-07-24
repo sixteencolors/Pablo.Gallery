@@ -1,4 +1,5 @@
-﻿@model Pablo.Gallery.Models.Pack
+﻿@using System.Web.Configuration
+@model Pablo.Gallery.Models.Pack
 @{
     ViewBag.Title = "Pack " + Model.Name;
 }
@@ -35,6 +36,10 @@
                 var msnry = new Masonry('.files', {});
             }
         });
+		@if (Convert.ToBoolean(WebConfigurationManager.AppSettings["EnableGallery"]))
+		{
+			<text>
+
         $('#result').gallery({
             images: 'a.thumbs',
             rel: 'thumbs',
@@ -42,6 +47,8 @@
                 $('#result').pageloader('load', finished);
             }
         });
+		</text>
+		}
     });
 </script>
 
