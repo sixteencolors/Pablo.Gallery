@@ -69,73 +69,76 @@ namespace Pablo.Gallery.Logic
 						using (var db = new GalleryContext())
 						{
 							var pack = db.Packs.FirstOrDefault(r => r.FileName.ToLower() == packShortFile.ToLower());
-							if (pack == null)
-							{
-								var name = Path.GetFileNameWithoutExtension(packFileEntry);
-								if (db.Packs.Any(p => p.Name == name))
-								{
-									updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
-										packShortFile.ToLower()));
-									continue;
-								}
-								pack = new Pack
-								{
-									Name = CanonicalName(Path.GetFileNameWithoutExtension(packFileEntry)),
-									FileName = packShortFile,
-									Date = date
-								};
-								db.Packs.Add(pack);
-
-								db.SaveChanges();
-							}
-							else
-							{
-								// fixup existing data
-								pack.Name = CanonicalName(pack.Name);
-							}
 							try
 							{
-								var archiveInfo = extractor.ExtractInfo(packFileName);
-								//pack.ArchiveComment = archiveInfo.Comment;
-								var files = archiveInfo.Files.ToArray();
-								foreach (var fileInfo in files)
+								if (pack == null)
 								{
-									var fileInfo1 = fileInfo;
-									try
+									var name = Path.GetFileNameWithoutExtension(packFileEntry);
+									if (db.Packs.Any(p => p.Name == name))
 									{
-										ExtractFileInfo(db, pack, fileInfo, () => GetStream(packFileName, fileInfo1));
+										updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
+											packShortFile.ToLower()));
+										continue;
 									}
-									catch (Exception ex)
+									pack = new Pack
 									{
-										updateStatus(string.Format("Error extracting file '{0}', {1}", fileInfo.FileName, ex));
-									}
-								}
-								var fileNames = files.Select(r => Scanner.NormalizedPath(r.FileName).TrimStart('\\')).ToArray();
-								foreach (var file in pack.Files.Where(r => !fileNames.Contains(r.FileName)).ToList())
-								{
-									db.Files.Remove(file);
-								}
-							}
-							catch (Exception ex)
-							{
-								updateStatus(string.Format("Error extracting pack '{0}', {1}", pack.FileName, ex));
-							}
+										Name = CanonicalName(Path.GetFileNameWithoutExtension(packFileEntry)),
+										FileName = packShortFile,
+										Date = date
+									};
+									db.Packs.Add(pack);
 
-							if (/*pack.Thumbnail == null &&*/ pack.Files != null)
-							{
-								pack.Thumbnail = pack.Files.FirstOrDefault(r => r.FileName.ToLowerInvariant() == "file_id.diz");
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".diz");
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".nfo");
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetFileNameWithoutExtension(r.FileName).ToLowerInvariant().Contains("info"));
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.OrderBy(r => r.Order).FirstOrDefault(r => r.Type != null);
-							}
-							try
-							{
+									db.SaveChanges();
+								}
+								else
+								{
+									// fixup existing data
+									pack.Name = CanonicalName(pack.Name);
+								}
+								try
+								{
+									var archiveInfo = extractor.ExtractInfo(packFileName);
+									//pack.ArchiveComment = archiveInfo.Comment;
+									var files = archiveInfo.Files.ToArray();
+									foreach (var fileInfo in files)
+									{
+										var fileInfo1 = fileInfo;
+										try
+										{
+											ExtractFileInfo(db, pack, fileInfo, () => GetStream(packFileName, fileInfo1));
+										}
+										catch (Exception ex)
+										{
+											updateStatus(string.Format("Error extracting file '{0}', {1}", fileInfo.FileName, ex));
+										}
+									}
+									var fileNames = files.Select(r => Scanner.NormalizedPath(r.FileName).TrimStart('\\')).ToArray();
+									foreach (var file in pack.Files.Where(r => !fileNames.Contains(r.FileName)).ToList())
+									{
+										db.Files.Remove(file);
+									}
+								}
+								catch (Exception ex)
+								{
+									updateStatus(string.Format("Error extracting pack '{0}', {1}", pack.FileName, ex));
+								}
+
+								if ( /*pack.Thumbnail == null &&*/ pack.Files != null)
+								{
+									pack.Thumbnail = pack.Files.FirstOrDefault(r => r.FileName.ToLowerInvariant() == "file_id.diz");
+									if (pack.Thumbnail == null)
+										pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".diz");
+									if (pack.Thumbnail == null)
+										pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".nfo");
+									if (pack.Thumbnail == null)
+										pack.Thumbnail =
+											pack.Files.FirstOrDefault(
+												r => Path.GetFileNameWithoutExtension(r.FileName).ToLowerInvariant().Contains("info"));
+									if (pack.Thumbnail == null)
+										pack.Thumbnail = pack.Files.OrderBy(r => r.Order).FirstOrDefault(r => r.Type != null);
+								}
 								db.SaveChanges();
+
 							}
 							catch (Exception ex)
 							{
