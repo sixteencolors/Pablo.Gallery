@@ -357,7 +357,6 @@
     <Content Include="Views\Pack\Detail.cshtml" />
     <Content Include="Views\Pack\File.cshtml" />
     <Content Include="Views\Year\Detail.cshtml" />
-    <Content Include="Content\Site.less" />
     <Content Include="Content\img\file-type\word.png" />
     <Content Include="Content\img\file-type\css.png" />
     <Content Include="Content\img\file-type\image.png" />
