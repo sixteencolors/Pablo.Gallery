@@ -85,6 +85,7 @@ namespace Pablo.Gallery.Logic
 									Date = date
 								};
 								db.Packs.Add(pack);
+
 								db.SaveChanges();
 							}
 							else
@@ -132,7 +133,16 @@ namespace Pablo.Gallery.Logic
 								if (pack.Thumbnail == null)
 									pack.Thumbnail = pack.Files.OrderBy(r => r.Order).FirstOrDefault(r => r.Type != null);
 							}
-							db.SaveChanges();
+							try
+							{
+								db.SaveChanges();
+							}
+							catch (Exception ex)
+							{
+								updateStatus(string.Format("Error saving changes to '{0}', {1}", pack.FileName, ex));
+								db.Entry(db.Packs).Reload();
+								db.Entry(db.Files).Reload();
+							}
 						}
 					}
 				}
