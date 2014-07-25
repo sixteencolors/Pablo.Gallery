@@ -14,7 +14,7 @@ if [ ! -f $OUTPUT_DIR/$CONTEXT_DLL ]; then
 fi
 
 echo "Copying migrate.exe and entity framework dll's to a temp directory"
-TMP_DIR=`mktemp -d -t pablo.gallery.migrate`
+TMP_DIR=`mktemp -d -t pablo.gallery.migrate.XXXX`
 
 cp -R $EF_DIR/tools/* $TMP_DIR
 cp -R $EF_DIR/lib/net40/* $TMP_DIR

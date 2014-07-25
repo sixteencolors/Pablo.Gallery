@@ -1,11 +1,20 @@
 ﻿@using System.Web.Configuration
+@using System.Web.UI.WebControls
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewBag.Title - @WebConfigurationManager.AppSettings["ApplicationNameLong"]</title>
+	<title>@(!string.IsNullOrEmpty(ViewBag.Title) ? ViewBag.Title + " - " : "")@WebConfigurationManager.AppSettings["ApplicationNameLong"]</title>
 	@Styles.Render("~/Content/css")
+	<meta property="og:title" content="@ViewBag.Title" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="@WebConfigurationManager.AppSettings["ApplicationNameLong"]"><meta property="og:url" content="@Request.Url.AbsoluteUri" />
+	<meta property="og:description" content="@WebConfigurationManager.AppSettings["SiteDescription"]" />
+	@if (!string.IsNullOrEmpty(ViewBag.PreviewImageUrl))
+	{
+	<meta property="og:image" content="@ViewBag.PreviewImageUrl" />
+	}
 </head>
 <body>
 @{
@@ -27,11 +36,12 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-			    @Html.ActionLink(WebConfigurationManager.AppSettings["ApplicationNameLong"], "Index", "Year", null, new { @class = "navbar-brand" })
+			    @Html.ActionLink(WebConfigurationManager.AppSettings["ApplicationNameLong"], "Index", "Home", null, new { @class = "navbar-brand" })
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					@* <li>@Html.ActionLink("Packs", "Index", "Year")</li>*@
+					<li>@Html.ActionLink("Packs", "Index", "Year")</li>
+					<li>@Html.ActionLink("Search", "Index", "File")</li>
 					@if (User.IsInRole("admin")) { 
 						<li>@Html.ActionLink("Scanner", "Index", "Scanner")</li> 
 					}
@@ -55,5 +65,25 @@
 	@Scripts.Render("~/bundles/js")
 	@Html.PageScripts()
 	@RenderSection("scripts", required: false)
+	@if (WebConfigurationManager.AppSettings.AllKeys.Contains("GoogleAnalyticsTrackingId") && !string.IsNullOrEmpty(WebConfigurationManager.AppSettings["GoogleAnalyticsTrackingId"]))
+	{
+		<script>
+			(function(i, s, o, g, r, a, m) {
+				i['GoogleAnalyticsObject'] = r;
+				i[r] = i[r] || function() {
+					(i[r].q = i[r].q || []).push(arguments)
+				}, i[r].l = 1 * new Date();
+				a = s.createElement(o),
+					m = s.getElementsByTagName(o)[0];
+				a.async = 1;
+				a.src = g;
+				m.parentNode.insertBefore(a, m)
+			})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+			ga('create', '@WebConfigurationManager.AppSettings["GoogleAnalyticsTrackingId"]', 'auto');
+			ga('send', 'pageview');
+
+		</script>
+	}
 </body>
 </html>

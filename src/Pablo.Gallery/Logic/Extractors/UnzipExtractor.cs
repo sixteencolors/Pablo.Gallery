@@ -19,6 +19,8 @@ namespace Pablo.Gallery.Logic.Extractors
 			this.exePath = exePath ?? ConfigurationManager.AppSettings["UnzipPath"] ?? "/usr/bin/unzip";
 		}
 
+		public override bool Enabled { get { return !string.IsNullOrEmpty(exePath); } }
+
 		public override bool CanExtractFile(string extension)
 		{
 			if (string.IsNullOrEmpty(exePath))

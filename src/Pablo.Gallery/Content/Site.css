@@ -80,12 +80,6 @@ html, body {
     border-radius: 0;
 }
 
-.year .btn {
-    width: 18em;
-    white-space: normal;
-    /* vertical-align: bottom; */
-}
-
 .btn span {
     display: block;
     position: relative;

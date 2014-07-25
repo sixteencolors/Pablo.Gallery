@@ -34,7 +34,7 @@ namespace Pablo.Gallery.Controllers
 			if (process == null)
 			{
 				process = new ProcessInfo();
-				process.Task = Task.Factory.StartNew(() => RunTask(process));
+				process.Task = Task.Factory.StartNew(() => RunTask(process, Request.Params["OnlyNew"] != "false"));
 				return Content("started");
 			}
 			return Content("already started");
@@ -63,7 +63,7 @@ namespace Pablo.Gallery.Controllers
 			return Content("Not running");
 		}
 
-		static void RunTask(ProcessInfo process)
+		static void RunTask(ProcessInfo process, bool onlyNew)
 		{
 			var sb = new StringBuilder();
 			try
@@ -72,7 +72,7 @@ namespace Pablo.Gallery.Controllers
 				scanner.ScanPacks(status => {
 					sb.AppendLine(status);
 					process.Message = sb.ToString();
-				});
+				}, onlyNew);
 				process.Done = true;
 			}
 			catch (Exception ex)

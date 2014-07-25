@@ -1,8 +1,10 @@
-﻿﻿@model Pablo.Gallery.Models.File
+﻿@using System.Web.Configuration
+﻿@model Pablo.Gallery.Models.File
 @{
-    ViewBag.Title = "File " + Model.Pack.Name + "\\" + Model.FileName;
+    ViewBag.Title = Model.Pack.Name + "\\" + Model.FileName;
 	var show = Request["display"] != "true";
 	ViewBag.ShowNav = show;
+	ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl(maxWidth: 320));	
 }
 @if (show) {
 	<h2>@Html.ActionLink(Model.Pack.Name, "Detail", new { pack = Model.Pack.Name })\@Model.FileName</h2>

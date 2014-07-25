@@ -18,14 +18,9 @@ namespace Pablo.Gallery
 				"~/Scripts/colorbox/jquery.colorbox.js",
 				"~/Scripts/bootstrap.js",
 				"~/Scripts/imagesloaded.pkgd.js",
+				"~/Scripts/jquery.parseparams.js",
 				"~/Scripts/jsrender.js",
 				"~/Scripts/Site.js"
-			));
-
-			// Use the development version of Modernizr to develop with and learn from. Then, when you're
-			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-				"~/Scripts/modernizr-*"
 			));
 
 			var bundle = new StyleBundle("~/Content/css").Include(

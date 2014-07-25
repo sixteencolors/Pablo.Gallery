@@ -1,20 +1,22 @@
-﻿@model dynamic
+﻿@using System.Web.Configuration
+@model dynamic
 
 @{
-    ViewBag.Title = "Home";
+    ViewBag.Title = null;
 }
 
 @section SecondaryHeader {
-    <h2>Latest Pack</h2>
 }
 
+<div id="Welcome">@Html.Raw(WebConfigurationManager.AppSettings["WelcomeMessage"])</div>
+<h2>Latest Packs</h2>
 <ul id="result" class="files packs latest"></ul>
 <div id="loading">Loading...</div>
 
 @section Scripts {
     <script id="pack-template" type="text/x-jsrender">
         <li class="file">
-            <a href="@Url.Content("~/"){{attr:url}}">
+            <a href="@Url.Content("~/").TrimEnd('/') {{attr:url}}">
                 <span class="file-image">
                     <img src="{{attr:previewUrl}}" />
                 </span>
@@ -25,12 +27,13 @@
 
     <script>
         $(function () {
-            $('#result').pageloader({
-                url: "@Url.RouteUrl("api", new { httproute="", Controller = "Pack", size = "3" })",
-                template: "#pack-template",
-                selector: function (data) { return data.packs; },
-                loading: "#loading",
-            });
+	        $('#result').pageloader({
+		        url: "@Url.RouteUrl("api", new { httproute="", Controller = "Pack", size = "3" })",
+		        template: "#pack-template",
+		        selector: function(data) { return data.packs; },
+		        loading: "#loading",
+		        enableScroll: false
+        });
         });
     </script>
 }

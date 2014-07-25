@@ -13,6 +13,8 @@ namespace Pablo.Gallery.Logic.Converters
 			return info.InputType == Models.FileType.Character.Name || info.InputType == Models.FileType.Image.Name || info.InputType == Models.FileType.Rip.Name;
 		}
 
+		public override bool Enabled { get { return true; } }
+
 		public override void Prepare(ConvertInfo info)
 		{
 			base.Prepare(info);

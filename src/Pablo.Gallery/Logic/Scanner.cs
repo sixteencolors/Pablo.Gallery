@@ -21,12 +21,12 @@ namespace Pablo.Gallery.Logic
 			return path.Replace(@"\", Path.DirectorySeparatorChar.ToString());
 		}
 
-		public void ScanPacks(Action<string> updateStatus)
+		public void ScanPacks(Action<string> updateStatus, bool onlyNew)
 		{
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
 
-			var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation);
+			var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r);
 			//dirs = dirs.SkipWhile(r => !r.EndsWith("1996", StringComparison.InvariantCultureIgnoreCase));
 			//dirs = dirs.Where(r => r.EndsWith("1997", StringComparison.OrdinalIgnoreCase));
 			foreach (var dir in dirs)
@@ -65,74 +65,93 @@ namespace Pablo.Gallery.Logic
 
 
 						var packShortFile = packFile.Substring(Global.SixteenColorsArchiveLocation.Length).TrimStart('\\');
-						updateStatus(string.Format("Updating pack {0}", packShortFile));
 						using (var db = new GalleryContext())
 						{
 							var pack = db.Packs.FirstOrDefault(r => r.FileName.ToLower() == packShortFile.ToLower());
-							if (pack == null)
-							{
-							    var name = Path.GetFileNameWithoutExtension(packFileEntry);
-                                if (db.Packs.Any(p =>p.Name == name))
-							    {
-							        updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
-							            packShortFile.ToLower()));
-							        continue;
-							    }
-								pack = new Pack
-								{
-									Name = CanonicalName(Path.GetFileNameWithoutExtension(packFileEntry)),
-									FileName = packShortFile,
-									Date = date
-								};
-                                db.Packs.Add(pack);
-							    db.SaveChanges();
-							}
-							else
-							{
-								// fixup existing data
-								pack.Name = CanonicalName(pack.Name);
-							}
 							try
 							{
-								var archiveInfo = extractor.ExtractInfo(packFileName);
-								//pack.ArchiveComment = archiveInfo.Comment;
-								var files = archiveInfo.Files.ToArray();
-								foreach (var fileInfo in files)
+								if (pack == null)
 								{
-									var fileInfo1 = fileInfo;
-									try
+									updateStatus(string.Format("Adding pack {0}", packShortFile));
+									var name = Path.GetFileNameWithoutExtension(packFileEntry);
+									if (db.Packs.Any(p => p.Name == name))
 									{
-										ExtractFileInfo(db, pack, fileInfo, () => GetStream(packFileName, fileInfo1));
+										updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
+											packShortFile.ToLower()));
+										continue;
 									}
-									catch (Exception ex)
+									pack = new Pack
 									{
-										updateStatus(string.Format("Error extracting file '{0}', {1}", fileInfo.FileName, ex));
+										Name = CanonicalName(Path.GetFileNameWithoutExtension(packFileEntry)),
+										FileName = packShortFile,
+										Date = date
+									};
+									db.Packs.Add(pack);
+
+									db.SaveChanges();
+								}
+								else if (onlyNew)
+								{
+									updateStatus(string.Format("Skipping pack {0}", packShortFile));
+									continue;
+								}
+								else
+								{
+									updateStatus(string.Format("Updating pack {0}", packShortFile));
+									// fixup existing data
+									pack.Name = CanonicalName(pack.Name);
+								}
+								try
+								{
+									var archiveInfo = extractor.ExtractInfo(packFileName);
+									//pack.ArchiveComment = archiveInfo.Comment;
+									var files = archiveInfo.Files.ToArray();
+									foreach (var fileInfo in files)
+									{
+										var fileInfo1 = fileInfo;
+										try
+										{
+											ExtractFileInfo(db, pack, fileInfo, () => GetStream(packFileName, fileInfo1));
+										}
+										catch (Exception ex)
+										{
+											updateStatus(string.Format("Error extracting file '{0}', {1}", fileInfo.FileName, ex));
+										}
+									}
+									var fileNames = files.Select(r => Scanner.NormalizedPath(r.FileName).TrimStart('\\')).ToArray();
+									foreach (var file in pack.Files.Where(r => !fileNames.Contains(r.FileName)).ToList())
+									{
+										db.Files.Remove(file);
 									}
 								}
-								var fileNames = files.Select(r=> Scanner.NormalizedPath(r.FileName).TrimStart('\\')).ToArray();
-								foreach (var file in pack.Files.Where(r => !fileNames.Contains(r.FileName)))
+								catch (Exception ex)
 								{
-									db.Files.Remove(file);
+									updateStatus(string.Format("Error extracting pack '{0}', {1}", pack.FileName, ex));
 								}
+
+								if ( /*pack.Thumbnail == null &&*/ pack.Files != null)
+								{
+									pack.Thumbnail = pack.Files.FirstOrDefault(r => r.FileName.ToLowerInvariant() == "file_id.diz");
+									if (pack.Thumbnail == null)
+										pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".diz");
+									if (pack.Thumbnail == null)
+										pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".nfo");
+									if (pack.Thumbnail == null)
+										pack.Thumbnail =
+											pack.Files.FirstOrDefault(
+												r => Path.GetFileNameWithoutExtension(r.FileName).ToLowerInvariant().Contains("info"));
+									if (pack.Thumbnail == null)
+										pack.Thumbnail = pack.Files.OrderBy(r => r.Order).FirstOrDefault(r => r.Type != null);
+								}
+								db.SaveChanges();
+
 							}
 							catch (Exception ex)
 							{
-								updateStatus(string.Format("Error extracting pack '{0}', {1}", pack.FileName, ex));
+								updateStatus(string.Format("Error saving changes to '{0}', {1}", pack.FileName, ex));
+								db.Entry(db.Packs).Reload();
+								db.Entry(db.Files).Reload();
 							}
-
-							if (/*pack.Thumbnail == null &&*/ pack.Files != null)
-							{
-								pack.Thumbnail = pack.Files.FirstOrDefault(r => r.FileName.ToLowerInvariant() == "file_id.diz");
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".diz");
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".nfo");
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetFileNameWithoutExtension(r.FileName).ToLowerInvariant().Contains("info"));
-								if (pack.Thumbnail == null)
-									pack.Thumbnail = pack.Files.OrderBy(r => r.Order).FirstOrDefault(r => r.Type != null);
-							}
-							db.SaveChanges();
 						}
 					}
 				}
@@ -183,35 +202,54 @@ namespace Pablo.Gallery.Logic
 				file.Type = FileType.Character.Name;
 			}
 
-			if (file.Type == FileType.Character.Name)
+			var infoParameters = new PabloDraw.InputParameters
 			{
-                if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
-				{
-					using (var stream = getStream())
-					{
-						using (var outStream = new MemoryStream())
-						{
-							var parameters = new PabloDraw.ConvertParameters
-							{
-								InputStream = stream,
-								InputFormat = file.Format,
-								OutputFormat = "ascii",
-								OutputStream = outStream
-							};
+				InputFormat = file.Format,
+				InputFileName = file.FileName
+			};
 
-							Global.PabloEngine.Convert(parameters);
-							outStream.Position = 0;
-							using (var reader = new StreamReader(outStream, Encoding.GetEncoding(437)))
+			if (Global.PabloEngine.SupportsFile(infoParameters))
+			{
+				using (var stream = getStream())
+				{
+					if (stream != null)
+					{
+						if (file.Type == FileType.Character.Name)
+						{
+							if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableContentSave"]) && file.Content == null)
 							{
-								var content = file.Content ?? (file.Content = new FileContent { File = file });
-								content.Text = reader.ReadToEnd().Replace((char)0, ' ');
+								using (var outStream = new MemoryStream())
+								{
+									var parameters = new PabloDraw.ConvertParameters
+									{
+										InputStream = stream,
+										InputFormat = file.Format,
+										InputFileName = file.FileName,
+										OutputFormat = "ascii",
+										OutputStream = outStream
+									};
+
+									Global.PabloEngine.Convert(parameters);
+									outStream.Position = 0;
+									using (var reader = new StreamReader(outStream, Encoding.GetEncoding(437)))
+									{
+										var content = file.Content ?? (file.Content = new FileContent { File = file });
+										content.Text = reader.ReadToEnd().Replace((char)0, ' ');
+									}
+									stream.Position = 0;
+								}
 							}
 						}
+						else if (file.Content != null)
+							file.Content = null;
+
+						infoParameters.InputStream = stream;
+						var info = Global.PabloEngine.GetInfo(infoParameters);
+						file.Width = info.ImageWidth;
+						file.Height = info.ImageHeight;
 					}
 				}
 			}
-			else if (file.Content != null)
-				file.Content = null;
 
 			return file;
 		}

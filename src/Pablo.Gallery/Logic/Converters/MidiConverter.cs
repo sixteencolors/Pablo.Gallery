@@ -20,6 +20,8 @@ namespace Pablo.Gallery.Logic.Converters
 			this.ffmpegPath = ffmpegPath ?? ConfigurationManager.AppSettings["FFmpegPath"];
 		}
 
+		public override bool Enabled { get { return !string.IsNullOrEmpty(timidityPath) && !string.IsNullOrEmpty(ffmpegPath); } }
+
 		static readonly string[] inputFormats = { ".mid" };
 		static readonly string[] outputFormats = { ".mp3", ".oga", ".ogg"};
 

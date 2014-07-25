@@ -11,10 +11,10 @@ namespace Pablo.Gallery.Controllers
 
 		public ActionResult Index(string query = null, int? year = null)
 		{
-            ViewBag.Params = JsonConvert.SerializeObject(new {
+            ViewBag.Params = new {
                 Year = year,
                 Query = query
-            });
+            };
             return View();
 		}
 
