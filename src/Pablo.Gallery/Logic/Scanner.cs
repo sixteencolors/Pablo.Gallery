@@ -21,7 +21,7 @@ namespace Pablo.Gallery.Logic
 			return path.Replace(@"\", Path.DirectorySeparatorChar.ToString());
 		}
 
-		public void ScanPacks(Action<string> updateStatus)
+		public void ScanPacks(Action<string> updateStatus, bool onlyNew)
 		{
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
@@ -65,7 +65,6 @@ namespace Pablo.Gallery.Logic
 
 
 						var packShortFile = packFile.Substring(Global.SixteenColorsArchiveLocation.Length).TrimStart('\\');
-						updateStatus(string.Format("Updating pack {0}", packShortFile));
 						using (var db = new GalleryContext())
 						{
 							var pack = db.Packs.FirstOrDefault(r => r.FileName.ToLower() == packShortFile.ToLower());
@@ -73,6 +72,7 @@ namespace Pablo.Gallery.Logic
 							{
 								if (pack == null)
 								{
+									updateStatus(string.Format("Adding pack {0}", packShortFile));
 									var name = Path.GetFileNameWithoutExtension(packFileEntry);
 									if (db.Packs.Any(p => p.Name == name))
 									{
@@ -90,8 +90,14 @@ namespace Pablo.Gallery.Logic
 
 									db.SaveChanges();
 								}
+								else if (onlyNew)
+								{
+									updateStatus(string.Format("Skipping pack {0}", packShortFile));
+									continue;
+								}
 								else
 								{
+									updateStatus(string.Format("Updating pack {0}", packShortFile));
 									// fixup existing data
 									pack.Name = CanonicalName(pack.Name);
 								}

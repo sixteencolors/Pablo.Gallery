@@ -1,6 +1,10 @@
 <div style="margin: 5px 0;">
-	<input type="button" id="button" value="Start Scanning" class="btn btn-primary"/>
-	
+	<div id="Decisions">
+		<form>
+			<input type="button" id="button" value="Start Scanning" class="btn btn-primary" />
+			@Html.CheckBox("OnlyNew") <label for="OnlyNew">Only Scan for new packs</label>
+		</form>
+	</div>
 	<span class="button" id="progress" style="display:none;">
 		Running Process...
 		<img src= "@Url.Content("~/Content/img/ajax-loader.gif")" />
@@ -36,7 +40,7 @@
 	        url: "@Url.Action("Start")",
 	        data: $("form").serialize(),
 	        success: function (data) {
-	            $('#button').toggle();
+	            $('#Decisions').toggle();
 	            $('#progress').toggle();
 	            window.setTimeout(checkProcess, 1000);
 	        },
@@ -61,7 +65,7 @@
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
 		    	addMsg("Error checking process: " + jqXHR.status + " " + errorThrown);
-	            $('#button').toggle();
+	            $('#Decisions').toggle();
 	            $('#progress').toggle();
 	        }
 	    });
@@ -69,7 +73,7 @@
 	 
 	function endProcess() {
 		var msg = $('#msg');
-		$('#button').toggle();
+		$('#Decisions').toggle();
 		$('#progress').toggle();
 		$.ajax({
 		    type: "POST",
