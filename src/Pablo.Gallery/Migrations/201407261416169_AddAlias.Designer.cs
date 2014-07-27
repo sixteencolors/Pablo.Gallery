@@ -7,13 +7,13 @@ namespace Pablo.Gallery.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.1-30610")]
-    public sealed partial class AddMetadata : IMigrationMetadata
+    public sealed partial class AddAlias : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddMetadata));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddAlias));
         
         string IMigrationMetadata.Id
         {
-            get { return "201407202040430_AddMetadata"; }
+            get { return "201407261416169_AddAlias"; }
         }
         
         string IMigrationMetadata.Source

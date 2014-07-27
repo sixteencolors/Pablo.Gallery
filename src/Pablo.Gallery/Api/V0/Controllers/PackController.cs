@@ -20,28 +20,28 @@ namespace Pablo.Gallery.Api.V0.Controllers
 {
 	public class PackController : ApiController
 	{
-		readonly Models.GalleryContext db = new Models.GalleryContext();
+		private readonly Models.GalleryContext db = new Models.GalleryContext();
 
 		[HttpGet]
 		public PackResult Index(int? year = null, string query = null, int page = 0, int size = Global.DefaultPageSize)
 		{
 			IQueryable<Pack> packs = from p in db.Packs
-			            orderby p.Date descending
-			            select p;
+				orderby p.Date descending
+				select p;
 			if (year != null)
 				packs = packs.Where(pack => pack.Date.Value.Year == year);
 			if (!string.IsNullOrEmpty(query))
 				packs = packs.Where(pack => pack.FileName.ToLower().Contains(query.ToLower()));
-			var results = size > 0 ? packs.Skip(page * size).Take(size).AsEnumerable() : packs;
+			var results = size > 0 ? packs.Skip(page*size).Take(size).AsEnumerable() : packs;
 			return new PackResult
 			{
 				Packs = (from pack in results
-				        select new PackSummary(pack)).ToList()
+					select new PackSummary(pack)).ToList()
 			};
 		}
 
 		[HttpGet, ActionName("Index")]
-		public HttpResponseMessage Download([FromUri(Name = "id")]string packName, string format)
+		public HttpResponseMessage Download([FromUri(Name = "id")] string packName, string format)
 		{
 			var pack = db.Packs.FirstOrDefault(r => r.Name == packName);
 			if (pack == null)
@@ -57,7 +57,7 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			{
 				FileName = Path.GetFileName(pack.NativeFileName)
 			};
-			var response = new HttpResponseMessage { Content = content };
+			var response = new HttpResponseMessage {Content = content};
 			response.Headers.CacheControl = new CacheControlHeaderValue
 			{
 				MaxAge = new TimeSpan(0, 10, 0),
@@ -67,7 +67,7 @@ namespace Pablo.Gallery.Api.V0.Controllers
 		}
 
 		[HttpGet, EnableCors]
-		public PackDetail Index([FromUri(Name = "id")]string packName, int page = 0, int size = Global.DefaultPageSize)
+		public PackDetail Index([FromUri(Name = "id")] string packName, int page = 0, int size = Global.DefaultPageSize)
 		{
 			var pack = db.Packs.FirstOrDefault(p => p.Name == packName);
 			if (pack == null)
@@ -75,7 +75,7 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			return new PackDetail(pack, page, size);
 		}
 
-		static string GetMediaType(string format)
+		private static string GetMediaType(string format)
 		{
 			switch (format.ToUpperInvariant())
 			{
@@ -98,8 +98,54 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			}
 		}
 
-		[HttpGet, HttpPost, EnableCors]
-		public FileDetail Index([FromUri(Name = "id")]string pack, [FromUri(Name = "path")] string name)
+		[HttpPost, HttpPut, HttpDelete, EnableCors]
+		[Authorize]
+		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Artist artist)
+		{
+			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+			if (file != null)
+			{
+				var artistRecord = db.Artists.FirstOrDefault(a => a.Alias == artist.Alias) ?? db.Artists.Add(new Artist {Alias = artist.Alias});
+				var fileArtist = file.Artists.FirstOrDefault(fa => fa.Artist.Id == artistRecord.Id && fa.FileId == file.Id);
+
+				if (fileArtist == null && Request.Method != HttpMethod.Delete)
+					db.FileArtists.Add(new FileArtist { ArtistId = artistRecord.Id, FileId = file.Id });
+				else if (fileArtist != null && fileArtist.IsDeleted && Request.Method != HttpMethod.Delete)
+					fileArtist.IsDeleted = false;
+				else if (fileArtist != null && Request.Method == HttpMethod.Delete)
+					fileArtist.IsDeleted = true;
+
+				db.SaveChanges();
+				file = db.Files.FirstOrDefault(f => f.Id == file.Id);
+			}
+			return new FileDetail(file);
+			// do nothing if the relationship already exists and is not deleted
+		}
+
+		[HttpPost, HttpPut, HttpDelete, EnableCors]
+		[Authorize]
+		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Tag tag) {
+			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+			if (file != null) {
+				var tagRecord = db.Tags.FirstOrDefault(t => t.Name == tag.Name) ?? db.Tags.Add(new Tag { Name = tag.Name });
+				var fileTag = file.Tags.FirstOrDefault(ft => ft.Tag.Id == tagRecord.Id && ft.FileId == file.Id);
+
+				if (fileTag == null && Request.Method != HttpMethod.Delete)
+					db.FileTags.Add(new FileTag { TagId = tagRecord.Id, FileId = file.Id });
+				else if (fileTag != null && fileTag.IsDeleted && Request.Method != HttpMethod.Delete)
+					fileTag.IsDeleted = false;
+				else if (fileTag != null && Request.Method == HttpMethod.Delete)
+					fileTag.IsDeleted = true;
+
+				db.SaveChanges();
+				file = db.Files.FirstOrDefault(f => f.Id == file.Id);
+			}
+			return new FileDetail(file);
+			// do nothing if the relationship already exists and is not deleted
+		}
+
+		[HttpGet, EnableCors]
+		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name)
 		{
 			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
 			if (file == null)

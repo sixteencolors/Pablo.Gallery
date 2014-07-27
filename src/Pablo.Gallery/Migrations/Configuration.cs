@@ -30,6 +30,8 @@ namespace Pablo.Gallery.Migrations
 			context.Roles.AddOrUpdate(r => r.Name,
 				new Models.Role { Name = "Admin" }
 				);
+
+	        context.SaveChanges();
         }
     }
 }

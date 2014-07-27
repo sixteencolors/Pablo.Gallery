@@ -30,11 +30,9 @@ namespace Pablo.Gallery.Models
 		public int? Width { get; set; }
 
 		public int? Height { get; set; }
-		[InverseProperty("Files")]
-		public virtual ICollection<Artist> Artists { get; set; }
+		public virtual ICollection<FileArtist> Artists { get; set; }
 		public string Title { get; set; }
-		[InverseProperty("Files")]
-		public virtual ICollection<Tag> Tags { get; set; }
+		public virtual ICollection<FileTag> Tags { get; set; }
 		public string NativeFileName
 		{
 			get { return Logic.Scanner.NativePath(FileName); }

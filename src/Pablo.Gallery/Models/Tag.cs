@@ -13,7 +13,6 @@ namespace Pablo.Gallery.Models {
 
 		[MaxLength(256), Index("ux_Tag_Name", IsUnique = true)]
 		public string Name { get; set; }
-		[InverseProperty("Tags")]
-		public virtual ICollection<File> Files { get; set; } 
+		public virtual ICollection<FileTag> FileTags { get; set; }
 	}
 }

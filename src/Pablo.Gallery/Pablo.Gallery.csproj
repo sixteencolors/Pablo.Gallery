@@ -264,6 +264,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Logic\Interceptors\FullTextSearchInterceptor.cs" />
+    <Compile Include="Logic\Interfaces\IAuditable.cs" />
+    <Compile Include="Logic\Interfaces\IDeletable.cs" />
+    <Compile Include="Logic\Interfaces\IVersionable.cs" />
     <Compile Include="Logic\Membership\GalleryMembershipProvider.cs" />
     <Compile Include="Logic\Scanner.cs" />
     <Compile Include="Migrations\201406242032095_create.cs" />
@@ -282,9 +285,17 @@
     <Compile Include="Migrations\201407221506043_ContentFTS.Designer.cs">
       <DependentUpon>201407221506043_ContentFTS.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407202040430_AddMetadata.cs" />
-    <Compile Include="Migrations\201407202040430_AddMetadata.Designer.cs">
-      <DependentUpon>201407202040430_AddMetadata.cs</DependentUpon>
+    <Compile Include="Migrations\201407260300000_AddMetadata.cs" />
+    <Compile Include="Migrations\201407260300000_AddMetadata.Designer.cs">
+      <DependentUpon>201407260300000_AddMetadata.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407260329110_AddFileMetadataAuditing.cs" />
+    <Compile Include="Migrations\201407260329110_AddFileMetadataAuditing.Designer.cs">
+      <DependentUpon>201407260329110_AddFileMetadataAuditing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407261416169_AddAlias.cs" />
+    <Compile Include="Migrations\201407261416169_AddAlias.Designer.cs">
+      <DependentUpon>201407261416169_AddAlias.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
@@ -292,6 +303,8 @@
     <Compile Include="Migrations\PabloSqlServerMigrationSqlGenerator.cs" />
     <Compile Include="Models\Artist.cs" />
     <Compile Include="Models\File.cs" />
+    <Compile Include="Models\FileArtist.cs" />
+    <Compile Include="Models\FileTag.cs" />
     <Compile Include="Models\GalleryContext.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Group.cs" />
@@ -585,8 +598,14 @@
     <EmbeddedResource Include="Migrations\201407221506043_ContentFTS.resx">
       <DependentUpon>201407221506043_ContentFTS.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407202040430_AddMetadata.resx">
-      <DependentUpon>201407202040430_AddMetadata.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201407260300000_AddMetadata.resx">
+      <DependentUpon>201407260300000_AddMetadata.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407260329110_AddFileMetadataAuditing.resx">
+      <DependentUpon>201407260329110_AddFileMetadataAuditing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407261416169_AddAlias.resx">
+      <DependentUpon>201407261416169_AddAlias.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
