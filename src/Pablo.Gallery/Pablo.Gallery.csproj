@@ -82,6 +82,9 @@
     <Reference Include="HibernatingRhinos.Profiler.Appender">
       <HintPath>..\..\..\..\tools\EFProfiler\HibernatingRhinos.Profiler.Appender.dll</HintPath>
     </Reference>
+    <Reference Include="Humanizer">
+      <HintPath>..\packages\Humanizer.1.28.0\lib\portable-win+net40+sl50+wp8+wpa81\Humanizer.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -251,9 +254,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\ApiModels\ArtistInfo.cs" />
     <Compile Include="Api\ApiModels\FileInfo.cs" />
     <Compile Include="Api\ApiModels\PackInfo.cs" />
     <Compile Include="Api\ApiModels\YearInfo.cs" />
+    <Compile Include="Api\V0\Controllers\ArtistController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -296,6 +301,10 @@
     <Compile Include="Migrations\201407261416169_AddAlias.cs" />
     <Compile Include="Migrations\201407261416169_AddAlias.Designer.cs">
       <DependentUpon>201407261416169_AddAlias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407281058139_AddArtistSlug.cs" />
+    <Compile Include="Migrations\201407281058139_AddArtistSlug.Designer.cs">
+      <DependentUpon>201407281058139_AddArtistSlug.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
@@ -362,6 +371,10 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\css\select2-spinner.gif" />
+    <Content Include="Content\css\select2.css" />
+    <Content Include="Content\css\select2.png" />
+    <Content Include="Content\css\select2x2.png" />
     <Content Include="Content\elements.less" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="font\dos437-webfont.svg" />
@@ -375,6 +388,53 @@
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\masonry.pkgd.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ar.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_az.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_bg.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ca.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_cs.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_da.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_de.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_el.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_es.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_et.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_eu.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_fa.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_fi.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_fr.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_gl.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_he.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_hr.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_hu.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_id.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_is.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_it.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ja.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ka.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ko.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_lt.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_lv.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_mk.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ms.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_nl.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_no.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_pl.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_pt-BR.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_pt-PT.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ro.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_rs.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ru.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_sk.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_sv.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_th.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_tr.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_ua.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_uk.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_vi.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_zh-CN.js" />
+    <Content Include="Scripts\Select2-locales\select2_locale_zh-TW.js" />
+    <Content Include="Scripts\select2.js" />
+    <Content Include="Scripts\select2.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
@@ -606,6 +666,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407261416169_AddAlias.resx">
       <DependentUpon>201407261416169_AddAlias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407281058139_AddArtistSlug.resx">
+      <DependentUpon>201407281058139_AddArtistSlug.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -98,7 +98,7 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			}
 		}
 
-		[HttpPost, HttpPut, HttpDelete, EnableCors]
+		[HttpPut, HttpDelete, EnableCors]
 		[Authorize]
 		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Artist artist)
 		{
@@ -122,27 +122,27 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			// do nothing if the relationship already exists and is not deleted
 		}
 
-		[HttpPost, HttpPut, HttpDelete, EnableCors]
-		[Authorize]
-		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Tag tag) {
-			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
-			if (file != null) {
-				var tagRecord = db.Tags.FirstOrDefault(t => t.Name == tag.Name) ?? db.Tags.Add(new Tag { Name = tag.Name });
-				var fileTag = file.Tags.FirstOrDefault(ft => ft.Tag.Id == tagRecord.Id && ft.FileId == file.Id);
+		//[HttpPut, HttpDelete, EnableCors]
+		//[Authorize]
+		//public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Tag tag) {
+		//	var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+		//	if (file != null) {
+		//		var tagRecord = db.Tags.FirstOrDefault(t => t.Name == tag.Name) ?? db.Tags.Add(new Tag { Name = tag.Name });
+		//		var fileTag = file.Tags.FirstOrDefault(ft => ft.Tag.Id == tagRecord.Id && ft.FileId == file.Id);
 
-				if (fileTag == null && Request.Method != HttpMethod.Delete)
-					db.FileTags.Add(new FileTag { TagId = tagRecord.Id, FileId = file.Id });
-				else if (fileTag != null && fileTag.IsDeleted && Request.Method != HttpMethod.Delete)
-					fileTag.IsDeleted = false;
-				else if (fileTag != null && Request.Method == HttpMethod.Delete)
-					fileTag.IsDeleted = true;
+		//		if (fileTag == null && Request.Method != HttpMethod.Delete)
+		//			db.FileTags.Add(new FileTag { TagId = tagRecord.Id, FileId = file.Id });
+		//		else if (fileTag != null && fileTag.IsDeleted && Request.Method != HttpMethod.Delete)
+		//			fileTag.IsDeleted = false;
+		//		else if (fileTag != null && Request.Method == HttpMethod.Delete)
+		//			fileTag.IsDeleted = true;
 
-				db.SaveChanges();
-				file = db.Files.FirstOrDefault(f => f.Id == file.Id);
-			}
-			return new FileDetail(file);
-			// do nothing if the relationship already exists and is not deleted
-		}
+		//		db.SaveChanges();
+		//		file = db.Files.FirstOrDefault(f => f.Id == file.Id);
+		//	}
+		//	return new FileDetail(file);
+		//	// do nothing if the relationship already exists and is not deleted
+		//}
 
 		[HttpGet, EnableCors]
 		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name)
