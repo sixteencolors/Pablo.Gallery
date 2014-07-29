@@ -8,6 +8,9 @@
 }
 @if (show) {
 	<h2>@Html.ActionLink(Model.Pack.Name, "Detail", new { pack = Model.Pack.Name })\@Model.FileName</h2>
+	<div>
+		<input type="text" class="artists"></input>
+	</div>
 	<p>
 		<a href="@Url.Content(Model.DownloadUrl())">Download File</a>
 	</p>
@@ -15,6 +18,62 @@
 else {
 	<h3>@Model.FileName</h3>
 }
+
 <p class="main-image">
 	@Html.Partial("_type_" + Model.OutputType, Model)
 </p>
+
+@section Scripts {
+	@Styles.Render("~/Content/css/select2.css")
+	@Scripts.Render("~/Scripts/select2.js")
+	<script>
+		// TODO: Infinite Scroll with Remote Data
+		$(".artists").select2({
+			placeholder: "Add an artist",
+			tags: [],
+			tokenSeparators: [","],
+			minimumInputLength: 1,
+			createSearchChoice: function(term, data) {
+				if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+					return {id: term, text: term}
+				}
+			},
+			ajax: {
+				url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
+				dataType: 'json',
+				type: 'GET',
+				data: function(term, page) {
+					return {
+						query: term,
+						size: 10
+					};
+				},
+				results: function(data, page) {
+					return {
+						results: $.map(data.artists, function(item) {
+							return {
+								text: item.alias,
+								slug: item.slug,
+								id: item.alias
+							}
+						})
+					};
+				}
+			}
+		});
+
+		$(".artists").on("change", function(e) {
+			if (e.added) {
+				$.ajax({
+					url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.added.id,
+					type: 'PUT'
+				});
+			} else if (e.removed) {
+				$.ajax({
+					url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.removed.id,
+					type: 'DELETE'
+				});
+		}
+		});
+	</script>
+}
