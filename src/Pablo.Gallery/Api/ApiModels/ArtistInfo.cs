@@ -8,32 +8,36 @@ using Pablo.Gallery.Models;
 
 namespace Pablo.Gallery.Api.ApiModels {
 	[DataContract(Name = "artist")]
-	public class ArtistBase
+	public class ArtistSummary
 	{
-		[DataMember(Name = "alias")]
-		public string Alias { get; set; }
-	}
-	[DataContract(Name = "artist")]
-	public class ArtistSummary: ArtistBase {
-		[DataMember(Name="files")]
-		public int Files { get; set; }
+		public Models.Artist Artist;
 
-		[DataMember(Name="url")]
-		public string Url { get; set; }
-
-		public ArtistSummary(string alias, int files)
+		public ArtistSummary(Models.Artist artist)
 		{
-			Alias = alias;
-			Files = files;
-			Url = "/artist/" + alias.Underscore().Dasherize();
+			Artist = artist;
 		}
+
+		[DataMember(Name = "url")]
+		public string Url { get { return "/artist/" + Artist.Slug; } set { } }
+
+		[DataMember(Name = "alias")]
+		public string Alias { get { return Artist.Alias; } set { } }
+
+		[DataMember(Name = "slug")]
+		public string Slug { get { return Artist.Slug; } set { } }
 	}
 
 	[DataContract(Name = "artist")]
-	public class ArtistDetail : ArtistBase
+	public class ArtistDetail : ArtistSummary
 	{
-		[DataMember(Name="Files")]
-		public IEnumerable<FileSummary> Files { get; set; } 
+		public ArtistDetail(Models.Artist artist, int page = 0, int size = Global.DefaultPageSize):base(artist)
+		{
+			Files = (from fa in artist.Files
+				select new FileSummary(fa.File)).Skip(page*size).Take(size);
+		}
+
+		[DataMember(Name = "files")]
+		public IEnumerable<FileSummary> Files { get; set; }
 	}
 
 	[DataContract(Name = "result")]

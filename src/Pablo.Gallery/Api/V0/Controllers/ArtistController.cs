@@ -20,28 +20,27 @@ namespace Pablo.Gallery.Api.V0.Controllers
 	    public ArtistResult Index(int page = 0, int size = Global.DefaultPageSize)
 	    {
 		    var artists = from a in db.Artists orderby a.Alias select a;
-		    var results = size > 0 ? artists.AsEnumerable().Skip(page*size).Take(size) : artists;
-		    return new ArtistResult {Artists = (from artist in results select new ArtistSummary(artist.Alias, artist.Files.Count)).ToList()};
+			var results = size > 0 ? artists.Skip(page * size).Take(size).AsEnumerable() : artists;
+		    return new ArtistResult
+		    {
+			    Artists = (from artist in results 
+						   select new ArtistSummary(artist)).ToList()
+		    };
 	    }
 
 	    [HttpGet, EnableCors]
 	    public ArtistDetail Index([FromUri(Name = "id")] string alias, int page = 0, int size = Global.DefaultPageSize)
 	    {
-		    var files = from f in db.Files
-			    join fa in db.FileArtists on f.Id equals fa.FileId
-			    join a in db.Artists on fa.ArtistId equals a.Id
-			    where a.Slug == alias
-			    select f;
+			//var files = from f in db.Files
+			//	join fa in db.FileArtists on f.Id equals fa.FileId
+			//	join a in db.Artists on fa.ArtistId equals a.Id
+			//	where a.Slug == alias
+			//	select f;
 
 		    var artist = db.Artists.FirstOrDefault(a => a.Slug == alias);
-		    var results = files.OrderBy(f => f.Pack.Date).Skip(page*size).Take(size).AsEnumerable();
-		    if (artist != null)
-			    return new ArtistDetail
-			    {
-				    Alias = artist.Alias,
-				    Files = (from f in results select new FileSummary(f)).ToArray()
-			    };
-			else return new ArtistDetail(); // TODO: Throw exception?
+		    if (artist == null)
+				throw new HttpResponseException(HttpStatusCode.NotFound);
+		    return new ArtistDetail(artist, page, size);
 	    }
 
 		protected override void Dispose(bool disposing) {
