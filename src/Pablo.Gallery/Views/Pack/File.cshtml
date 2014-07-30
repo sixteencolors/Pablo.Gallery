@@ -1,15 +1,22 @@
 ﻿@using System.Web.Configuration
+@using Humanizer
 ﻿@model Pablo.Gallery.Models.File
 @{
-    ViewBag.Title = Model.Pack.Name + "\\" + Model.FileName;
+	ViewBag.Title = Model.Pack.Name + "\\" + Model.FileName + " by " + (Model.Artists.Count > 0 ? Model.Artists.Where(fa => !fa.IsDeleted).Select(fa => fa.Artist.Alias).Humanize("and") : "Unknown");
 	var show = Request["display"] != "true";
 	ViewBag.ShowNav = show;
 	ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl(maxWidth: 320));	
 }
 @if (show) {
 	<h2>@Html.ActionLink(Model.Pack.Name, "Detail", new { pack = Model.Pack.Name })\@Model.FileName</h2>
-	<div>
-		<input type="text" class="artists"></input>
+	<div class="artistInfo">
+		<label for="artists">Artists: </label>
+		<span class="view">
+			@(Model.Artists.Count > 0 ? Model.Artists.Where(fa => !fa.IsDeleted).Select(fa => fa.Artist.Alias).Humanize("and") : "Unknown") (@if(Request.IsAuthenticated) {<text><a href="#" class="edit">Edit</a></text>} else { <text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</text>})
+		</span>
+		<span class="edit">
+			<input type="text" class="artists" id="artists" value="@string.Join(", ", Model.Artists.Where(fa => !fa.IsDeleted).Select(fa => fa.Artist.Alias))" />
+		</span>
 	</div>
 	<p>
 		<a href="@Url.Content(Model.DownloadUrl())">Download File</a>
@@ -24,56 +31,78 @@ else {
 </p>
 
 @section Scripts {
-	@Styles.Render("~/Content/css/select2.css")
-	@Scripts.Render("~/Scripts/select2.js")
 	<script>
-		// TODO: Infinite Scroll with Remote Data
-		$(".artists").select2({
-			placeholder: "Add an artist",
-			tags: [],
-			tokenSeparators: [","],
-			minimumInputLength: 1,
-			createSearchChoice: function(term, data) {
-				if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
-					return {id: term, text: term}
-				}
-			},
-			ajax: {
-				url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
-				dataType: 'json',
-				type: 'GET',
-				data: function(term, page) {
-					return {
-						query: term,
-						size: 10
-					};
+		$(function() {
+			// TODO: Infinite Scroll with Remote Data
+			$(".artists").select2({
+				placeholder: "Add an artist",
+				tags: [],
+				tokenSeparators: [","],
+				minimumInputLength: 1,
+				initSelection: function (element, callback) {
+					var data = [];
+					$(element.val().split(",")).each(function () {
+						data.push({ id: this, text: this });
+					});
+					callback(data);
 				},
-				results: function(data, page) {
-					return {
-						results: $.map(data.artists, function(item) {
-							return {
-								text: item.alias,
-								slug: item.slug,
-								id: item.alias
-							}
-						})
-					};
+				createSearchChoice: function (term, data) {
+					if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+						return { id: term, text: term }
+					}
+				},
+				ajax: {
+					url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
+					dataType: 'json',
+					type: 'GET',
+					data: function(term, page) {
+						return {
+							query: term,
+							size: 10
+						};
+					},
+					results: function(data, page) {
+						return {
+							results: $.map(data.artists, function(item) {
+								return {
+									text: item.alias,
+									slug: item.slug,
+									id: item.alias
+								}
+							})
+						};
+					}
 				}
-			}
-		});
+			});
 
-		$(".artists").on("change", function(e) {
-			if (e.added) {
-				$.ajax({
-					url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.added.id,
-					type: 'PUT'
-				});
-			} else if (e.removed) {
-				$.ajax({
-					url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.removed.id,
-					type: 'DELETE'
-				});
-		}
+			// TODO: Update "view" mode when list changes
+			// TODO: Pull all of the artist info from API and load via AJAX (to make sure changes slip through a CDN)
+			$(".artists").on("change", function(e) {
+				if (e.added) {
+					$.ajax({
+						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.added.id,
+						type: 'PUT'
+					});
+				} else if (e.removed) {
+					$.ajax({
+						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.removed.id,
+						type: 'DELETE'
+					});
+				}
+			});
+
+			// Show tag editor when "Edit" is clicked
+			$(".artistInfo").on("click", "a.edit", function(e) {
+				$(this).parents(".artistInfo").find("span.edit").show();
+				$(this).parents(".view").hide();
+			});
+
+			// Hide tag editor when user clicks out of select2
+			$(".artists").on("select2-blur", function (e) {
+				$(this).parents(".artistInfo").find(".view").show();
+				$(this).parents(".artistInfo").find("span.edit").hide();
+			});
 		});
+	
 	</script>
 }

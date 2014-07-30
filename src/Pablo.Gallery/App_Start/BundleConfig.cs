@@ -20,13 +20,15 @@ namespace Pablo.Gallery
 				"~/Scripts/imagesloaded.pkgd.js",
 				"~/Scripts/jquery.parseparams.js",
 				"~/Scripts/jsrender.js",
-				"~/Scripts/Site.js"
+				"~/Scripts/Site.js",
+				"~/Scripts/select2.js"
 			));
 
 			var bundle = new StyleBundle("~/Content/css").Include(
 			    "~/Content/colorbox.css",
 				"~/Content/bootstrap.css",
-				"~/Content/Site.less"
+				"~/Content/css/select2.css",
+				"~/Content/Site.less"				
 			);
 			bundle.Transforms.Clear();
 			bundle.Transforms.Add(new LessTransform());
