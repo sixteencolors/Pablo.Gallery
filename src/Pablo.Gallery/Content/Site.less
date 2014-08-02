@@ -268,10 +268,53 @@ h2 {
 
 .artistInfo {
 	.view {
-
+		float: left;
 	}
 
+	label {
+		float: left;
+	}
 	span.edit {
 		display: none;
 	}
 }
+
+ul.list {
+	list-style-type: none;
+	padding: 0 0 0 1em;
+	li {
+		float: left;
+		margin: 0 1em 1em 0;
+		background: @cyan;
+		color: @black;
+		a {
+			padding: .5em 1em;
+			color: @black;
+			text-decoration: none;
+			display: block;
+		}
+		a:hover {
+			background: @cyan_i;
+		}
+	}
+}
+
+/*ul.list {
+}
+.artistInfo label {
+    float: left;
+}
+span.view {
+    float: left;
+}
+ul.list {
+    list-style-type: none;
+    padding: 0 0 0 1em;
+}
+.list li {
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    background: #ccc;
+    padding: .5em 1em;
+}*/

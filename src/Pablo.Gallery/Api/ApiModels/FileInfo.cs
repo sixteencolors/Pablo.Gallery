@@ -86,8 +86,15 @@ namespace Pablo.Gallery.Api.ApiModels
 			: base(file)
 		{
 			Year = file.Pack.Date.Value.Year;
+			Artists = from fa in file.Artists
+				where !fa.IsDeleted
+				orderby fa.Artist.Alias
+				select new ArtistSummary(fa.Artist);
 		}
 
+		[DataMember(Name = "artists")]
+		public IEnumerable<ArtistSummary> Artists { get; set; }
+		
 		[DataMember(Name = "year")]
 		public int Year { get; set; }
 	}

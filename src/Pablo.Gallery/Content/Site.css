@@ -89,7 +89,7 @@ html, body {
     text-align: left;
 }
 
-.select2-container-multi .select2-choices .select2-search-choice {
+/*.select2-container-multi .select2-choices .select2-search-choice {
     border-radius: 0;
     box-shadow: none;
     filter:  none;
@@ -111,4 +111,4 @@ html, body {
 .select2-container-multi .select2-choices .select2-search-field input {
     padding: 0;
     margin-left: 1em;
-}
+}*/

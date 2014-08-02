@@ -98,11 +98,14 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			}
 		}
 
+		// Add/remove an artist from a file
+		// Only using HttpPut and not HttpPost because I had trouble getting the post body and the put uri data at the same time
 		[HttpPut, HttpDelete, EnableCors]
 		[Authorize]
-		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Artist artist)
+		public ArtistResult Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Artist artist)
 		{
 			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+			artist.Alias = artist.Alias.Trim();
 			if (file != null)
 			{
 				var artistRecord = db.Artists.FirstOrDefault(a => a.Alias == artist.Alias) ?? db.Artists.Add(new Artist {Alias = artist.Alias});
@@ -116,34 +119,21 @@ namespace Pablo.Gallery.Api.V0.Controllers
 					fileArtist.IsDeleted = true;
 
 				db.SaveChanges();
-				file = db.Files.FirstOrDefault(f => f.Id == file.Id);
+				//file = db.Files.FirstOrDefault(f => f.Id == file.Id);
 			}
-			return new FileDetail(file);
+			var artists = file != null ? from a in db.Artists
+										 join fa in db.FileArtists on a.Id equals fa.ArtistId
+										 where fa.FileId == file.Id && !fa.IsDeleted
+										 orderby a.Alias
+										 select a : null;
+
+			return new ArtistResult {
+				Artists = (from a in artists.AsEnumerable()
+						   select new ArtistSummary(a)).ToList()
+			};
 			// do nothing if the relationship already exists and is not deleted
 		}
-
-		//[HttpPut, HttpDelete, EnableCors]
-		//[Authorize]
-		//public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Tag tag) {
-		//	var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
-		//	if (file != null) {
-		//		var tagRecord = db.Tags.FirstOrDefault(t => t.Name == tag.Name) ?? db.Tags.Add(new Tag { Name = tag.Name });
-		//		var fileTag = file.Tags.FirstOrDefault(ft => ft.Tag.Id == tagRecord.Id && ft.FileId == file.Id);
-
-		//		if (fileTag == null && Request.Method != HttpMethod.Delete)
-		//			db.FileTags.Add(new FileTag { TagId = tagRecord.Id, FileId = file.Id });
-		//		else if (fileTag != null && fileTag.IsDeleted && Request.Method != HttpMethod.Delete)
-		//			fileTag.IsDeleted = false;
-		//		else if (fileTag != null && Request.Method == HttpMethod.Delete)
-		//			fileTag.IsDeleted = true;
-
-		//		db.SaveChanges();
-		//		file = db.Files.FirstOrDefault(f => f.Id == file.Id);
-		//	}
-		//	return new FileDetail(file);
-		//	// do nothing if the relationship already exists and is not deleted
-		//}
-
+		
 		[HttpGet, EnableCors]
 		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name)
 		{
