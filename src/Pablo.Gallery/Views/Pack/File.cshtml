@@ -34,6 +34,7 @@ else {
 
 @section Scripts {
 	<script id="artist-template" type="text/x-jsrender">
+		{{:artists}}
 		<li class="artist">
 			<a href="@Url.RootUrl(){{:url}}">{{:alias}}</a>
 		</li>
@@ -41,12 +42,12 @@ else {
 	</script>
 	<script>
 		var template = $.templates("#artist-template");
-		$(function () {
+		$(function() {
 			$(".artistInfo ul").pageloader({
 				url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Pack.Name, path = Model.FileName})',
 				template: "#artist-template",
 				loading: "#loading",
-				selector: function (data) {return data.artists;},
+				selector: function(data) { return data.artists; },
 
 			});
 			// TODO: Infinite Scroll with Remote Data
@@ -55,15 +56,15 @@ else {
 				tags: [],
 				tokenSeparators: [","],
 				minimumInputLength: 1,
-				initSelection: function (element, callback) {
+				initSelection: function(element, callback) {
 					var data = [];
-					$(element.val().split(",")).each(function () {
+					$(element.val().split(",")).each(function() {
 						data.push({ id: this, text: this });
 					});
 					callback(data);
 				},
-				createSearchChoice: function (term, data) {
-					if ($(data).filter(function () { return this.text.localeCompare(term) === 0; }).length === 0) {
+				createSearchChoice: function(term, data) {
+					if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
 						return { id: term, text: term }
 					}
 				},
@@ -71,15 +72,15 @@ else {
 					url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
 					dataType: 'json',
 					type: 'GET',
-					data: function (term, page) {
+					data: function(term, page) {
 						return {
 							query: term,
 							size: 10
 						};
 					},
-					results: function (data, page) {
+					results: function(data, page) {
 						return {
-							results: $.map(data.artists, function (item) {
+							results: $.map(data.artists, function(item) {
 								return {
 									text: item.alias,
 									slug: item.slug,
@@ -93,7 +94,7 @@ else {
 
 			// TODO: Update "view" mode when list changes
 			// TODO: Pull all of the artist info from API and load via AJAX (to make sure changes slip through a CDN)
-			$(".artists").on("change", function (e) {
+			$(".artists").on("change", function(e) {
 				if (e.added) {
 					$.ajax({
 						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.added.id,
@@ -106,7 +107,7 @@ else {
 					$.ajax({
 						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.removed.id,
 						type: 'DELETE',
-						success: function (data) {
+						success: function(data) {
 							$(".artistInfo .view ul").html($.templates("#artist-template").render(data.artists));
 						}
 
@@ -114,20 +115,20 @@ else {
 				}
 				// Update the "view" rendered content
 				var data = [];
-				$(e.val).each(function () {
+				$(e.val).each(function() {
 					data.push({ id: this, text: this });
 				});
 				$(".artistInfo .view ul").html($.templates("#artist-template").render(data));
 			});
 
 			// Show tag editor when "Edit" is clicked
-			$(".artistInfo").on("click", "a.edit", function (e) {
+			$(".artistInfo").on("click", "a.edit", function(e) {
 				$(this).parents(".artistInfo").find("span.edit").show();
 				$(this).parents(".view").hide();
 			});
 
 			// Hide tag editor when user clicks out of select2
-			$(".artists").on("select2-blur", function (e) {
+			$(".artists").on("select2-blur", function(e) {
 				$(this).parents(".artistInfo").find(".view").show();
 				$(this).parents(".artistInfo").find("span.edit").hide();
 			});

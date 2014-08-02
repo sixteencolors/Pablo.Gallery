@@ -273,10 +273,22 @@ h2 {
 
 	label {
 		float: left;
+		padding-top: .5em;
 	}
 	span.edit {
 		display: none;
 	}
+
+	&:after {
+		visibility: hidden;
+		display: block;
+		font-size: 0;
+		content: " ";
+		clear: both;
+		height: 0;
+	}
+
+	padding-left: 2em;
 }
 
 ul.list {
