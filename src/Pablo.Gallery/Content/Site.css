@@ -89,6 +89,10 @@ html, body {
     text-align: left;
 }
 
+.select2-container-multi .select2-choices .select2-search-field input {
+    min-width: 40em;
+}
+
 /*.select2-container-multi .select2-choices .select2-search-choice {
     border-radius: 0;
     box-shadow: none;

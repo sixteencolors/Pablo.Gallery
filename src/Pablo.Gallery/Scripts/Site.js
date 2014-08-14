@@ -136,7 +136,7 @@ function supports_history_api() { return !!(window.history && history.pushState)
 					var elements;
 						if (o.selector != null)
 							data = o.selector(data);
-						if (data != null && data.length) {
+						if (data != null/* && data.length*/) {
 							var template = $.templates(o.template);
 						var elements = template.render(data);
 						o.result.append(elements);

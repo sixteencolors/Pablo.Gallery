@@ -1,5 +1,6 @@
 ﻿@using System.Web.Configuration
 @using Humanizer
+@using Pablo.Gallery.Api.ApiModels
 ﻿@model Pablo.Gallery.Models.File
 @{
 	ViewBag.Title = Model.Pack.Name + "\\" + Model.FileName + " by " + (Model.Artists.Count > 0 ? Model.Artists.Where(fa => !fa.IsDeleted).Select(fa => fa.Artist.Alias).Humanize("and") : "Unknown");
@@ -10,15 +11,6 @@
 @if (show) {
 	<h2>@Html.ActionLink(Model.Pack.Name, "Detail", new { pack = Model.Pack.Name })\@Model.FileName</h2>
 	<div class="artistInfo">
-		<label for="artists">Artists: </label>
-		<span class="view">
-			<ul class="list"></ul>
-			<div id="loading">Loading...</div>
-			(@if(Request.IsAuthenticated){<text><a href="#" class="edit">Edit</a></text>}else{<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</text>})
-		</span>
-		<span class="edit">
-			<input type="text" class="artists" id="artists" value="@string.Join(", ", Model.Artists.Where(fa => !fa.IsDeleted).Select(fa => fa.Artist.Alias))" />
-		</span>
 	</div>
 	<p>
 		<a href="@Url.Content(Model.DownloadUrl())">Download File</a>
@@ -34,81 +26,99 @@ else {
 
 @section Scripts {
 	<script id="artist-template" type="text/x-jsrender">
-		{{:artists}}
+	<label for="artists">Artists: </label>
+	<span class="view">
+		<ul class="list">
+		{{if artists && artists.length}}
+		{{for artists}}
 		<li class="artist">
 			<a href="@Url.RootUrl(){{:url}}">{{:alias}}</a>
 		</li>
-	
-	</script>
+		{{/for}}
+		{{else}}
+		<li class="artist">
+			<a>Unknown</a>
+		</li>
+		{{/if}}
+		</ul>
+		(@if (Request.IsAuthenticated) {<text><a href="#" class="edit">Edit</a></text>} else {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</text>})
+	</span>
+	<span class="edit">
+		<input type="text" class="artists" id="artists" data-artists="{{:~json(artists)}}" />
+	</span>
+
+
+</script>
 	<script>
 		var template = $.templates("#artist-template");
 		$(function() {
-			$(".artistInfo ul").pageloader({
-				url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Pack.Name, path = Model.FileName})',
+			$(".artistInfo").pageloader({
+				url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Pack.Name, path = Model.Name})',
 				template: "#artist-template",
 				loading: "#loading",
-				selector: function(data) { return data.artists; },
-
-			});
-			// TODO: Infinite Scroll with Remote Data
-			$(".artists").select2({
-				placeholder: "Add an artist",
-				tags: [],
-				tokenSeparators: [","],
-				minimumInputLength: 1,
-				initSelection: function(element, callback) {
-					var data = [];
-					$(element.val().split(",")).each(function() {
-						data.push({ id: this, text: this });
+				selector: function (data) { return data; },
+				enableScroll: false,
+				onComplete: function() {
+					$(".artists").select2({
+						placeholder: "Add an artist",
+						tags: [],
+						tokenSeparators: [","],
+						minimumInputLength: 1,
+						initSelection: function(element, callback) {
+							var data = [];
+							data.artists = $(element).data("artists");
+							callback(data);
+						},
+						createSearchChoice: function(term, data) {
+							if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+								return { id: term, text: term }
+							}
+						},
+						// TODO: Infinite Scroll with Remote Data http://ivaynberg.github.io/select2/#infinite
+						ajax: {
+							url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
+						dataType: 'json',
+						type: 'GET',
+						data: function(term, page) {
+							return {
+								query: term,
+								// size: 10
+							};
+						},
+						results: function(data, page) {
+							return {
+								results: $.map(data.artists, function(item) {
+									return {
+										text: item.alias,
+										slug: item.slug,
+										id: item.alias
+									}
+								})
+							};
+						}
+					}
 					});
-					callback(data);
-				},
-				createSearchChoice: function(term, data) {
-					if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
-						return { id: term, text: term }
-					}
-				},
-				ajax: {
-					url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
-					dataType: 'json',
-					type: 'GET',
-					data: function(term, page) {
-						return {
-							query: term,
-							size: 10
-						};
-					},
-					results: function(data, page) {
-						return {
-							results: $.map(data.artists, function(item) {
-								return {
-									text: item.alias,
-									slug: item.slug,
-									id: item.alias
-								}
-							})
-						};
-					}
+					
 				}
 			});
 
 			// TODO: Update "view" mode when list changes
 			// TODO: Pull all of the artist info from API and load via AJAX (to make sure changes slip through a CDN)
-			$(".artists").on("change", function(e) {
+			$(".artistInfo").on("change", ".artists", function (e) {
 				if (e.added) {
 					$.ajax({
-						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.added.id,
+						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})?alias=" + e.added.id,
 						type: 'PUT',
 						success: function(data) {
-							$(".artistInfo .view ul").html($.templates("#artist-template").render(data.artists));
+							$(".artistInfo").html($.templates("#artist-template").render(data));
 						}
 					});
 				} else if (e.removed) {
 					$.ajax({
-						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.FileName})?alias=" + e.removed.id,
+						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})?alias=" + e.removed.id,
 						type: 'DELETE',
 						success: function(data) {
-							$(".artistInfo .view ul").html($.templates("#artist-template").render(data.artists));
+							$(".artistInfo").html($.templates("#artist-template").render(data));
 						}
 
 					});
@@ -118,7 +128,7 @@ else {
 				$(e.val).each(function() {
 					data.push({ id: this, text: this });
 				});
-				$(".artistInfo .view ul").html($.templates("#artist-template").render(data));
+				$(".artistInfo").html($.templates("#artist-template").render(data));
 			});
 
 			// Show tag editor when "Edit" is clicked
@@ -128,12 +138,17 @@ else {
 			});
 
 			// Hide tag editor when user clicks out of select2
-			$(".artists").on("select2-blur", function(e) {
+			$(".artistInfo").on("select2-blur", ".artists", function (e) {
 				$(this).parents(".artistInfo").find(".view").show();
 				$(this).parents(".artistInfo").find("span.edit").hide();
 			});
 		});
 
+		function stringify(value) {
+			return JSON.stringify(value);
+		}
+
+		$.views.helpers({ json: stringify });
 
 	</script>
 }
