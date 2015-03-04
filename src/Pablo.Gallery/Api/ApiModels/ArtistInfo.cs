@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Web;
-using Humanizer;
-using Pablo.Gallery.Models;
+using Newtonsoft.Json;
 
 namespace Pablo.Gallery.Api.ApiModels {
 	[DataContract(Name = "artist")]
@@ -46,4 +44,10 @@ namespace Pablo.Gallery.Api.ApiModels {
 		[DataMember(Name = "artists")]
 		public IEnumerable<ArtistSummary> Artists { get; set; }
 	}
+
+    public class ArtistMeta {
+        [DataMember(Name = "alias")]
+        public string Alias { get; set; }
+    }
+
 }

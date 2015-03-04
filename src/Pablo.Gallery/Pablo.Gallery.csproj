@@ -257,8 +257,10 @@
     <Compile Include="Api\ApiModels\ArtistInfo.cs" />
     <Compile Include="Api\ApiModels\FileInfo.cs" />
     <Compile Include="Api\ApiModels\PackInfo.cs" />
+    <Compile Include="Api\ApiModels\TagInfo.cs" />
     <Compile Include="Api\ApiModels\YearInfo.cs" />
     <Compile Include="Api\V0\Controllers\ArtistController.cs" />
+    <Compile Include="Api\V0\Controllers\TagController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -305,6 +307,10 @@
     <Compile Include="Migrations\201407281058139_AddArtistSlug.cs" />
     <Compile Include="Migrations\201407281058139_AddArtistSlug.Designer.cs">
       <DependentUpon>201407281058139_AddArtistSlug.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408231451047_TagChanges.cs" />
+    <Compile Include="Migrations\201408231451047_TagChanges.Designer.cs">
+      <DependentUpon>201408231451047_TagChanges.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
@@ -669,6 +675,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407281058139_AddArtistSlug.resx">
       <DependentUpon>201407281058139_AddArtistSlug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408231451047_TagChanges.resx">
+      <DependentUpon>201408231451047_TagChanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

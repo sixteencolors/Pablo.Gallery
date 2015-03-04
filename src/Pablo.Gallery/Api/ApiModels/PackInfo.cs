@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 using System.Web.Mvc;
@@ -93,4 +94,13 @@ namespace Pablo.Gallery.Api.ApiModels
 		[DataMember(Name = "packs")]
 		public IEnumerable<PackSummary> Packs { get; set; }
 	}
+
+    public class PackMetaUpdate
+    {
+        [DataMember(Name = "artist")]
+        public ArtistMeta Artist { get; set; }
+
+        [DataMember(Name = "tag")]
+        public TagMeta Tag { get; set; }
+    }
 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
 using Humanizer;
-using Pablo.Gallery.Logic.Interfaces;
 
 namespace Pablo.Gallery.Models {
 	[Table("Artist", Schema = GalleryContext.Schema)]

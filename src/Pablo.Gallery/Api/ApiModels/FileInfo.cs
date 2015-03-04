@@ -90,12 +90,20 @@ namespace Pablo.Gallery.Api.ApiModels
 				where !fa.IsDeleted
 				orderby fa.Artist.Alias
 				select new ArtistSummary(fa.Artist);
+            // TODO: Determine why the tag is coming back null in this relationship
+		    Tags = from ft in file.Tags
+		        where !ft.IsDeleted
+		        orderby ft.Tag.Name
+		        select new TagSummary(ft.Tag);
 		}
 
 		[DataMember(Name = "artists")]
 		public IEnumerable<ArtistSummary> Artists { get; set; }
-		
-		[DataMember(Name = "year")]
+
+        [DataMember(Name = "tags")]
+        public IEnumerable<TagSummary> Tags { get; set; }
+        
+        [DataMember(Name = "year")]
 		public int Year { get; set; }
 	}
 }

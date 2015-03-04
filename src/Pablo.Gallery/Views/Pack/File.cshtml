@@ -10,8 +10,8 @@
 }
 @if (show) {
 	<h2>@Html.ActionLink(Model.Pack.Name, "Detail", new { pack = Model.Pack.Name })\@Model.FileName</h2>
-	<div class="artistInfo">
-	</div>
+	<div class="artistInfo"></div>
+	<div class="tagInfo"></div>
 	<p>
 		<a href="@Url.Content(Model.DownloadUrl())">Download File</a>
 	</p>
@@ -25,7 +25,7 @@ else {
 </p>
 
 @section Scripts {
-	<script id="artist-template" type="text/x-jsrender">
+    <script id="artist-template" type="text/x-jsrender">
 	<label for="artists">Artists: </label>
 	<span class="view">
 		<ul class="list">
@@ -41,7 +41,10 @@ else {
 		</li>
 		{{/if}}
 		</ul>
-		(@if (Request.IsAuthenticated) {<text><a href="#" class="edit">Edit</a></text>} else {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</text>})
+		(@if (Request.IsAuthenticated)
+		 {<text><a href="#" class="edit">Edit</a></text>}
+		 else
+		 {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new {id = "loginLink"})</text>})
 	</span>
 	<span class="edit">
 		<input type="text" class="artists" id="artists" data-artists="{{:~json(artists)}}" />
@@ -49,106 +52,236 @@ else {
 
 
 </script>
-	<script>
-		var template = $.templates("#artist-template");
-		$(function() {
-			$(".artistInfo").pageloader({
-				url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Pack.Name, path = Model.Name})',
-				template: "#artist-template",
-				loading: "#loading",
-				selector: function (data) { return data; },
-				enableScroll: false,
-				onComplete: function() {
-					$(".artists").select2({
-						placeholder: "Add an artist",
-						tags: [],
-						tokenSeparators: [","],
-						minimumInputLength: 1,
-						initSelection: function(element, callback) {
-							var data = [];
-							data.artists = $(element).data("artists");
-							callback(data);
-						},
-						createSearchChoice: function(term, data) {
-							if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
-								return { id: term, text: term }
-							}
-						},
-						// TODO: Infinite Scroll with Remote Data http://ivaynberg.github.io/select2/#infinite
-						ajax: {
-							url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
-						dataType: 'json',
-						type: 'GET',
-						data: function(term, page) {
-							return {
-								query: term,
-								// size: 10
-							};
-						},
-						results: function(data, page) {
-							return {
-								results: $.map(data.artists, function(item) {
-									return {
-										text: item.alias,
-										slug: item.slug,
-										id: item.alias
-									}
-								})
-							};
-						}
-					}
-					});
-					
-				}
-			});
+    <script id="tag-template" type="text/x-jsrender">
+	<label for="tags">Tags: </label>
+	<span class="view">
+		<ul class="list">
+			{{if tags && tags.length}}
+			{{for tags}}
+			<li class="tag">
+				<a href="@Url.RootUrl(){{:url}}">{{:name}}</a>
+			</li>
+			{{/for}}
+			{{else}}
+			<li class="tag">
+				<a>None</a>
+			</li>
+			{{/if}}
+		</ul>
+		(@if (Request.IsAuthenticated)
+		 {<text><a href="#" class="edit">Edit</a></text>}
+		 else
+		 {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new {id = "loginLink"})</text>})
+	</span>
+	<span class="edit">
+		<input type="text" class="tags" id="tags" data-tags="{{:~json(tags)}}" />
+	</span>
 
-			// TODO: Update "view" mode when list changes
-			// TODO: Pull all of the artist info from API and load via AJAX (to make sure changes slip through a CDN)
-			$(".artistInfo").on("change", ".artists", function (e) {
-				if (e.added) {
-					$.ajax({
-						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})?alias=" + e.added.id,
-						type: 'PUT',
-						success: function(data) {
-							$(".artistInfo").html($.templates("#artist-template").render(data));
-						}
-					});
-				} else if (e.removed) {
-					$.ajax({
-						url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})?alias=" + e.removed.id,
-						type: 'DELETE',
-						success: function(data) {
-							$(".artistInfo").html($.templates("#artist-template").render(data));
-						}
 
-					});
-				}
-				// Update the "view" rendered content
-				var data = [];
-				$(e.val).each(function() {
-					data.push({ id: this, text: this });
-				});
-				$(".artistInfo").html($.templates("#artist-template").render(data));
-			});
+</script>
+    <script>
+        var template = $.templates("#artist-template");
+        $(function() {
+            $(".artistInfo").pageloader({
+                url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Pack.Name, path = Model.Name})',
+                template: "#artist-template",
+                loading: "#loading",
+                selector: function(data) { return data; },
+                enableScroll: false,
+                onComplete: function() {
+                    $(".artists").select2({
+                        placeholder: "Add an artist",
+                        tags: [],
+                        tokenSeparators: [","],
+                        minimumInputLength: 1,
+                        initSelection: function(element, callback) {
+                            var data = [];
+                            data.artists = $(element).data("artists");
+                            callback(data);
+                        },
+                        createSearchChoice: function(term, data) {
+                            if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+                                return { id: term, text: term }
+                            }
+                        },
+                        // TODO: Infinite Scroll with Remote Data http://ivaynberg.github.io/select2/#infinite
+                        ajax: {
+                            url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist"})",
+                            dataType: 'json',
+                            type: 'GET',
+                            data: function(term, page) {
+                                return {
+                                    query: term,
+                                    // size: 10
+                                };
+                            },
+                            results: function(data, page) {
+                                return {
+                                    results: $.map(data.artists, function(item) {
+                                        return {
+                                            text: item.alias,
+                                            slug: item.slug,
+                                            id: item.alias
+                                        }
+                                    })
+                                };
+                            }
+                        }
+                    });
 
-			// Show tag editor when "Edit" is clicked
-			$(".artistInfo").on("click", "a.edit", function(e) {
-				$(this).parents(".artistInfo").find("span.edit").show();
-				$(this).parents(".view").hide();
-			});
+                }
+            });
 
-			// Hide tag editor when user clicks out of select2
-			$(".artistInfo").on("select2-blur", ".artists", function (e) {
-				$(this).parents(".artistInfo").find(".view").show();
-				$(this).parents(".artistInfo").find("span.edit").hide();
-			});
-		});
+            $(".tagInfo").pageloader({
+                url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Pack.Name, path = Model.Name})',
+                template: "#tag-template",
+                loading: "#loading",
+                selector: function(data) { return data; },
+                enableScroll: false,
+                onComplete: function() {
+                    $(".tags").select2({
+                        placeholder: "Add a tag",
+                        tags: [],
+                        tokenSeparators: [","],
+                        minimumInputLength: 1,
+                        initSelection: function(element, callback) {
+                            var data = [];
+                            data.tags = $(element).data("tags");
+                            callback(data);
+                        },
+                        createSearchChoice: function(term, data) {
+                            if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+                                return { id: term, text: term }
+                            }
+                        },
+                        // TODO: Infinite Scroll with Remote Data http://ivaynberg.github.io/select2/#infinite
+                        ajax: {
+                            url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Tag"})",
+                            dataType: 'json',
+                            type: 'GET',
+                            data: function(term, page) {
+                                return {
+                                    query: term,
+                                    // size: 10
+                                };
+                            },
+                            results: function(data, page) {
+                                return {
+                                    results: $.map(data.tags, function(item) {
+                                        return {
+                                            text: item.name,
+                                            slug: item.slug,
+                                            id: item.name
+                                        }
+                                    })
+                                };
+                            }
+                        }
+                    });
 
-		function stringify(value) {
-			return JSON.stringify(value);
-		}
+                }
+            });
 
-		$.views.helpers({ json: stringify });
+            $(".artistInfo").on("change", ".artists", function(e) {
+                var update = new Object();
+                update.artist = new Object();
+                if (e.added) {
+                    update.artist.alias = e.added.id;
+                    $.ajax({
+                        url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})",
+                        data: update,
+                        type: 'PUT',
+                        success: function(data) {
+                            $(".artistInfo").html($.templates("#artist-template").render(data));
+                        }
+                    });
+                } else if (e.removed) {
+                    update.artist.alias = e.removed.id;
+                    $.ajax({
+                        url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})",
+                        data: update,
+                        type: 'DELETE',
+                        success: function(data) {
+                            $(".artistInfo").html($.templates("#artist-template").render(data));
+                        }
 
-	</script>
+                    });
+                }
+                // Update the "view" rendered content
+                var data = [];
+                $(e.val).each(function() {
+                    data.push({ id: this, text: this });
+                });
+                $(".artistInfo").html($.templates("#artist-template").render(data));
+            });
+
+            // Show tag editor when "Edit" is clicked
+            $(".artistInfo").on("click", "a.edit", function(e) {
+                $(this).parents(".artistInfo").find("span.edit").show();
+                $(this).parents(".view").hide();
+            });
+
+            // Hide tag editor when user clicks out of select2
+            $(".artistInfo").on("select2-blur", ".artists", function(e) {
+                $(this).parents(".artistInfo").find(".view").show();
+                $(this).parents(".artistInfo").find("span.edit").hide();
+            });
+
+            // Tags
+
+            $(".tagInfo").on("change", ".tags", function (e) {
+                var update = new Object();
+                update.tag = new Object();
+                if (e.added) {
+                    update.tag.name = e.added.id;
+                    $.ajax({
+                        url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})",
+                        type: 'PUT',
+                        data: update,
+                        success: function(data) {
+                            $(".tagInfo").html($.templates("#tag-template").render(data));
+                        }
+                    });
+                } else if (e.removed) {
+                    update.tag.name = e.removed.id;
+                    $.ajax({
+                        url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Pack.Name, path = @Model.Name})",
+                        type: 'DELETE',
+                        data: update,
+                        success: function(data) {
+                            $(".tagInfo").html($.templates("#tag-template").render(data));
+                        }
+
+                    });
+                }
+                // Update the "view" rendered content
+                var data = [];
+                $(e.val).each(function() {
+                    data.push({ id: this, text: this });
+                });
+                $(".tagInfo").html($.templates("#tag-template").render(data));
+            });
+
+            // Show tag editor when "Edit" is clicked
+            $(".tagInfo").on("click", "a.edit", function(e) {
+                $(this).parents(".tagInfo").find("span.edit").show();
+                $(this).parents(".view").hide();
+            });
+
+            // Hide tag editor when user clicks out of select2
+            $(".tagInfo").on("select2-blur", ".tags", function(e) {
+                $(this).parents(".tagInfo").find(".view").show();
+                $(this).parents(".tagInfo").find("span.edit").hide();
+            });
+
+        });
+
+        function stringify(value) {
+            return JSON.stringify(value);
+        }
+
+        $.views.helpers({ json: stringify });
+
+    </script>
+
 }
