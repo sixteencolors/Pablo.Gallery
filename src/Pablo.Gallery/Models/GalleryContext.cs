@@ -57,6 +57,8 @@ namespace Pablo.Gallery.Models
 
 		public DbSet<File> Files { get; set; }
 		public DbSet<Artist> Artists { get; set; }
+        public DbSet<Group> Groups { get; set; }
+
 		public DbSet<FileArtist> FileArtists { get; set; }
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<FileTag> FileTags { get; set; }
@@ -157,6 +159,7 @@ namespace Pablo.Gallery.Models
 				m.ToTable("User_Role", Schema);
 			});
 
+
 			modelBuilder.Entity<FileArtist>()
 				.HasKey(fa => new {fa.FileId, fa.ArtistId});
 
@@ -181,28 +184,7 @@ namespace Pablo.Gallery.Models
 			modelBuilder.Entity<Tag>()
 				.HasMany(t => t.Files)
 				.WithRequired()
-				.HasForeignKey(ft => ft.TagId);
-
-			//modelBuilder.Entity<File>().
-			//	HasMany(c => c.Artists).
-			//	WithMany(f => f.Files).
-			//	Map(m =>
-			//{
-			//	m.MapLeftKey("File_Id");
-			//	m.MapRightKey("Artist_Id");
-			//	m.ToTable("File_Artist", Schema);
-			//});
-
-			//modelBuilder.Entity<File>().
-			//	HasMany(c => c.Tags).
-			//	WithMany(p => p.Files).
-			//	Map(m =>
-			//{
-			//	m.MapLeftKey("File_Id");
-			//	m.MapRightKey("Tag_Id");
-			//	m.ToTable("File_Tag", Schema);
-			//});
-
+				.HasForeignKey(ft => ft.TagId);			
 		}
 	}
 }

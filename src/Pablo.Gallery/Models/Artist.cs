@@ -30,7 +30,6 @@ namespace Pablo.Gallery.Models {
 			set { _slug = value; }
 		}
 
-		public virtual ICollection<Group> Groups { get; set; }
 		public virtual ICollection<FileArtist> Files { get; set; }
 	}
 

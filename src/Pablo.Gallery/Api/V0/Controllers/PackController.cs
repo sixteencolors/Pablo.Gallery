@@ -97,6 +97,40 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			}
 		}
 
+        // Add/remove metadata for a pack
+        // PackMetaData allows us to read any json -- we cannot have separate controllers with different objects for the data passed in
+        // because MVC is not able to decipher the different object types. Instead we setup a json structure that allows for 
+        // various attributes that need to be assigned to a pack
+        // Only using HttpPut and not HttpPost because I had trouble getting the post body and the put uri data at the same time
+        [HttpPut, HttpDelete, EnableCors]
+        [Authorize]
+        public PackDetail Index([FromUri(Name = "id")] string pack, PackMetaUpdate update)
+        {
+            var file = db.Packs.FirstOrDefault(p => p.Name == pack);
+            if (update.Group != null)
+            {
+                var group = update.Group;
+                group.Name = group.Name.Trim();
+                if (file != null)
+                {
+                    var groupRecord = db.Groups.FirstOrDefault(g => g.Name == group.Name) ?? db.Groups.Add(new Group() { Name = group.Name});
+                    file.Group = Request.Method != HttpMethod.Delete ? groupRecord : null;
+                }
+            }
+            db.SaveChanges();
+            //var artists = file != null ? from a in db.Artists
+            //							 join fa in db.FileArtists on a.Id equals fa.ArtistId
+            //							 where fa.FileId == file.Id && !fa.IsDeleted
+            //							 orderby a.Alias
+            //							 select a : null;
+            return new PackDetail(file);
+            //return new ArtistResult {
+            //    Artists = (from a in artists.AsEnumerable()
+            //               select new ArtistSummary(a)).ToList()
+            //};
+            // do nothing if the relationship already exists and is not deleted
+        }
+
 
 		// Add/remove metadata for a file
         // PackMetaData allows us to read any json -- we cannot have separate controllers with different objects for the data passed in

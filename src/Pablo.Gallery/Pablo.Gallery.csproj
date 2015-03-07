@@ -256,10 +256,12 @@
   <ItemGroup>
     <Compile Include="Api\ApiModels\ArtistInfo.cs" />
     <Compile Include="Api\ApiModels\FileInfo.cs" />
+    <Compile Include="Api\ApiModels\GroupInfo.cs" />
     <Compile Include="Api\ApiModels\PackInfo.cs" />
     <Compile Include="Api\ApiModels\TagInfo.cs" />
     <Compile Include="Api\ApiModels\YearInfo.cs" />
     <Compile Include="Api\V0\Controllers\ArtistController.cs" />
+    <Compile Include="Api\V0\Controllers\GroupController.cs" />
     <Compile Include="Api\V0\Controllers\TagController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -315,6 +317,14 @@
     <Compile Include="Migrations\201503051940537_CleanupTags.cs" />
     <Compile Include="Migrations\201503051940537_CleanupTags.Designer.cs">
       <DependentUpon>201503051940537_CleanupTags.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503071546286_FixGroupNameProperty.cs" />
+    <Compile Include="Migrations\201503071546286_FixGroupNameProperty.Designer.cs">
+      <DependentUpon>201503071546286_FixGroupNameProperty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503072029224_RemoveErrantRelationship.cs" />
+    <Compile Include="Migrations\201503072029224_RemoveErrantRelationship.Designer.cs">
+      <DependentUpon>201503072029224_RemoveErrantRelationship.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
@@ -685,6 +695,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503051940537_CleanupTags.resx">
       <DependentUpon>201503051940537_CleanupTags.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503071546286_FixGroupNameProperty.resx">
+      <DependentUpon>201503071546286_FixGroupNameProperty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503072029224_RemoveErrantRelationship.resx">
+      <DependentUpon>201503072029224_RemoveErrantRelationship.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

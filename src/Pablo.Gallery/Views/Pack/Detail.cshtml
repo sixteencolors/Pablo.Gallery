@@ -1,12 +1,13 @@
 ﻿@using System.Web.Configuration
 @model Pablo.Gallery.Models.Pack
 @{
-    ViewBag.Title = "Pack " + Model.Name;
+    ViewBag.Title = "Pack " + Model.Name + " by " + (Model.Group != null ? Model.Group.Name : "Unknown Group");
 	ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl(maxWidth: 320));	
 }
 
 @section SecondaryHeader {
     <h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Index", "Pack", new {year = Model.Date.Value.Year}, null)\@Model.Name</h2>
+<div class="groupInfo"></div>
     <p>
         <a href="@Url.Content(Model.DownloadUrl())">Download Pack</a>
     </p>
@@ -15,8 +16,8 @@
 <div id="loading">Loading...</div>
 
 @section Scripts {
-@Scripts.Render("~/Scripts/masonry.pkgd.js")
-<script id="file-template" type="text/x-jsrender">
+    @Scripts.Render("~/Scripts/masonry.pkgd.js")
+    <script id="file-template" type="text/x-jsrender">
 	<li class="file">
 		<a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
 			<span class="file-image">
@@ -26,20 +27,20 @@
 		</a>
 	</li>
 </script>
-<script>
-    $(function() {
-        $('#result').pageloader({
-            url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})",
-            template: "#file-template",
-            loading: "#loading",
-            selector: function(data) { return data.files; },
-            onComplete: function() {
-                var msnry = new Masonry('.files', {});
-            }
-        });
-		@if (Convert.ToBoolean(WebConfigurationManager.AppSettings["EnableGallery"]))
-		{
-			<text>
+    <script>
+        $(function() {
+            $('#result').pageloader({
+                url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})",
+                template: "#file-template",
+                loading: "#loading",
+                selector: function(data) { return data.files; },
+                onComplete: function() {
+                    var msnry = new Masonry('.files', {});
+                }
+            });
+            @if (Convert.ToBoolean(WebConfigurationManager.AppSettings["EnableGallery"]))
+            {
+                <text>
 
         $('#result').gallery({
             images: 'a.thumbs',
@@ -49,10 +50,151 @@
             }
         });
 		</text>
-		}
-    });
+            }
+        });
+    </script>
+    
+    <script id="group-template" type="text/x-jsrender">
+    <label for="groups">Group: </label>
+    <span class="view">
+        <ul class="list">
+            {{if group}}
+            <li class="group">
+                <a href="@Url.RootUrl(){{:group.url}}">{{:group.name}}</a>
+            </li>
+            {{else}}
+            <li class="group">
+                <a>Unknown</a>
+            </li>
+            {{/if}}
+        </ul>
+        (@if (Request.IsAuthenticated)
+         {<text><a href="#" class="edit">Edit</a></text>}
+         else
+         {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new {id = "loginLink"})</text>})
+    </span>
+    <span class="edit">
+        <input type="hidden" class="groups" id="groups" data-groups="{{:~json(groups)}}" />
+    </span>
+
+
 </script>
 
+    <script>
+        var template = $.templates("#group-template");
+        $(function() {
+            $(".groupInfo").pageloader({
+                url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})',
+                template: "#group-template",
+                loading: "#loading",
+                selector: function(data) { return data; },
+                enableScroll: false,
+                onComplete: function() {
+                    $(".groups").select2({
+                        placeholder: "Select the group",
+                        minimumInputLength: 1,
+                        initSelection: function(element, callback) {
+                            var data = [];
+                            data.groups = $(element).data("groups");
+                            callback(data);
+                        },
+                        query: function(query) {
+                            var data = { results: [] };
+                            data.results.push({ text: query.term, id: query.term });
+                            query.callback(data);
+                        },
+                        /*createSearchChoice: function(term, data) {
+                            if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+                                return { id: term, text: term }
+                            }
+                        },*/
+                        ajax: {
+                            url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Group"})",
+                            dataType: 'json',
+                            type: 'GET',
+                            data: function(term, page) {
+                                return {
+                                    query: term,
+                                    // size: 10
+                                };
+                            },
+                            results: function(data, page) {
+                                return {
+                                    results: $.map(data.groups, function(item) {
+                                        return {
+                                            text: item.alias,
+                                            slug: item.slug,
+                                            id: item.alias
+                                        }
+                                    })
+                                };
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            $(".groupInfo").on("change", function(e) {
+                var update = new Object();
+                update.group = new Object();
+                if (e.added) {
+                    update.group.name = e.added.id;
+                    $.ajax({
+                        url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Name})",
+                        data: update,
+                        type: 'PUT',
+                        success: function(data) {
+                            $(".groupInfo").html($.templates("#group-template").render(data));
+                        }
+                    });
+                } else if (e.removed) {
+                    update.group.name = e.removed.id;
+                    $.ajax({
+                        url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Name})",
+                        data: update,
+                        type: 'DELETE',
+                        success: function(data) {
+                            $(".groupInfo").html($.templates("#group-template").render(data));
+                        }
+
+                    });
+                }
+                // Update the "view" rendered content
+                var data = [];
+                $(e.val).each(function() {
+                    data.push({ id: this, text: this });
+                });
+                $(".groupInfo").html($.templates("#group-template").render(data));
+            });
+
+            // Show tag editor when "Edit" is clicked
+            $(".groupInfo").on("click", "a.edit", function(e) {
+                $(this).parents(".groupInfo").find("span.edit").show();
+                $(this).parents(".view").hide();
+            });
+
+            // Hide tag editor when user clicks out of select2
+            $(".groupInfo").on("select2-blur", ".groups", function(e) {
+                $(this).parents(".groupInfo").find(".view").show();
+                $(this).parents(".groupInfo").find("span.edit").hide();
+            });
+
+        });
+
+        function stringify(value) {
+            return JSON.stringify(value);
+        }
+
+        $.views.helpers({ json: stringify });
+    </script>
+
 }
+
+
+
+
+
+
 
     
