@@ -21,7 +21,6 @@ namespace Pablo.Gallery.Models
 
 		[InverseProperty("Packs")]
 		public virtual Group Group { get; set; }
-		public virtual ICollection<Tag> Tags { get; set; }
 
 		[NotMapped]
 		public string NativeFileName

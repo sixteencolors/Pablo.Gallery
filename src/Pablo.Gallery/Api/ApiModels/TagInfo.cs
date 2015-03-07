@@ -8,7 +8,7 @@ namespace Pablo.Gallery.Api.ApiModels {
 	public class TagSummary {
 		public Tag Tag { get; set; }
 
-		public TagSummary(Tag tag)
+		public TagSummary(Models.Tag tag)
 		{
 			Tag = tag;
 		}
@@ -28,7 +28,7 @@ namespace Pablo.Gallery.Api.ApiModels {
 	{
 		public TagDetail(Tag tag, int page = 0, int size = Global.DefaultPageSize) : base(tag)
 		{
-			Files = (from ft in tag.FileTags
+			Files = (from ft in tag.Files
 				select new FileSummary(ft.File)).Skip(page*size).Take(size);
 		}
 

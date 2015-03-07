@@ -26,13 +26,13 @@ namespace Pablo.Gallery.Models {
 			}
 		}
 
-		public virtual ICollection<FileTag> FileTags { get; set; }
-
 		[MaxLength(256), Index("ux_Tag_Slug", IsUnique = true)]
 		public string Slug
 		{
 			get { return _slug; }
 			set { _slug = value; }
 		}
-	}
+
+        public virtual ICollection<FileTag> Files { get; set; }
+    }
 }

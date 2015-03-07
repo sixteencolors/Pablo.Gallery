@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Pablo.Gallery.Api.ApiModels;
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -160,7 +161,10 @@ namespace Pablo.Gallery.Api.V0.Controllers
 		[HttpGet, EnableCors]
 		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name)
 		{
-			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+            // HACK: For the life of me I could not get Tags to load without eagerly loading them. Artists, which seem
+            // to be defined in the exact same way, load lazily without issue. (although I don't love lazy loading so that is a whole
+            // other issue
+			var file = db.Files.Include(f => f.Tags.Select(ft => ft.Tag)).FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
 			if (file == null)
 				throw new HttpResponseException(HttpStatusCode.NotFound);
 			return new FileDetail(file);

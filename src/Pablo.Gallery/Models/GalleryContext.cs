@@ -179,7 +179,7 @@ namespace Pablo.Gallery.Models
 				.HasForeignKey(ft => ft.FileId);
 
 			modelBuilder.Entity<Tag>()
-				.HasMany(t => t.FileTags)
+				.HasMany(t => t.Files)
 				.WithRequired()
 				.HasForeignKey(ft => ft.TagId);
 

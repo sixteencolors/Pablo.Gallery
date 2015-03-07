@@ -312,6 +312,10 @@
     <Compile Include="Migrations\201408231451047_TagChanges.Designer.cs">
       <DependentUpon>201408231451047_TagChanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503051940537_CleanupTags.cs" />
+    <Compile Include="Migrations\201503051940537_CleanupTags.Designer.cs">
+      <DependentUpon>201503051940537_CleanupTags.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Extensions.cs" />
@@ -678,6 +682,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408231451047_TagChanges.resx">
       <DependentUpon>201408231451047_TagChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503051940537_CleanupTags.resx">
+      <DependentUpon>201503051940537_CleanupTags.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
