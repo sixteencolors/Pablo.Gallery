@@ -29,6 +29,7 @@ namespace Pablo.Gallery
 		        defaults: new {controller = "Artist", action = "Detail"}
 		    );
 
+
             routes.MapRoute(
                 name: "Group",
                 url: "group/{group}",

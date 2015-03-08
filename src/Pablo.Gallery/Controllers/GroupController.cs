@@ -9,6 +9,10 @@ namespace Pablo.Gallery.Controllers
 {
     public class GroupController : GalleryController
     {
+        public ActionResult Index()
+        {
+            return View();
+        }
         public ActionResult Detail(string group)
         {
             var model = db.Groups.FirstOrDefault(g => g.Slug == group);
