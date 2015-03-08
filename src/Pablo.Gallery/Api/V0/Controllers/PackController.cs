@@ -117,6 +117,14 @@ namespace Pablo.Gallery.Api.V0.Controllers
                     file.Group = Request.Method != HttpMethod.Delete ? groupRecord : null;
                 }
             }
+
+            if (update.Month.HasValue && update.Month > 0)
+            {
+                if (file != null)
+                {
+                    file.Date = new DateTime(file.Date.Value.Year, update.Month.Value, file.Date.Value.Day);
+                }
+            }
             db.SaveChanges();
             //var artists = file != null ? from a in db.Artists
             //							 join fa in db.FileArtists on a.Id equals fa.ArtistId

@@ -2,12 +2,13 @@
 @model Pablo.Gallery.Models.Pack
 @{
     ViewBag.Title = "Pack " + Model.Name + " by " + (Model.Group != null ? Model.Group.Name : "Unknown Group");
-	ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl(maxWidth: 320));	
+    ViewBag.PreviewImageUrl = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + Url.Content(Model.PreviewUrl(maxWidth: 320));
 }
 
 @section SecondaryHeader {
-    <h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Index", "Pack", new {year = Model.Date.Value.Year}, null)\@Model.Name</h2>
-<div class="groupInfo"></div>
+    <h2>@Html.ActionLink(Model.Date.Value.Year.ToString(), "Index", "Pack", new { year = Model.Date.Value.Year }, null)\@Model.Name</h2>
+    <div class="monthInfo"></div>
+    <div class="groupInfo"></div>
     <p>
         <a href="@Url.Content(Model.DownloadUrl())">Download Pack</a>
     </p>
@@ -17,83 +18,135 @@
 
 @section Scripts {
     @Scripts.Render("~/Scripts/masonry.pkgd.js")
+    <script id="month-template" type="text/x-jsrender">
+        <label for="month">Month: </label>
+        <span class="view">
+            <span class="basicMeta"><a href="#">{{monthName:month}}</a></span>
+            (@if (Request.IsAuthenticated) {<text><a href="#" class="edit">Edit</a></text>} else {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</text>})
+        </span>
+        <span class="edit">
+            <select id="month">
+                <option value="1" {{if month ==1}}selected{{/if}}>January</option>
+                <option value="2" {{if month==2}}selected{{/if}}>February</option>
+                <option value="3" {{if month==3}}selected{{/if}}>March</option>
+                <option value="4" {{if month==4}}selected{{/if}}>April</option>
+                <option value="5" {{if month==5}}selected{{/if}}>May</option>
+                <option value="6" {{if month==6}}selected{{/if}}>June</option>
+                <option value="7" {{if month==7}}selected{{/if}}>July</option>
+                <option value="8" {{if month==8}}selected{{/if}}>August</option>
+                <option value="9" {{if month==9}}selected{{/if}}>September</option>
+                <option value="10" {{if month==10}}selected{{/if}}>October</option>
+                <option value="11" {{if month==11}}selected{{/if}}>November</option>
+                <option value="12" {{if month==12}}selected{{/if}}>December</option>
+            </select>
+        </span>
+    </script>
     <script id="file-template" type="text/x-jsrender">
-	<li class="file">
-		<a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
-			<span class="file-image">
-				<img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight}}height="{{attr:previewHeight}}"{{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
-			</span>
-			<span class="file-name">{{>fileName}}</span>
-		</a>
-	</li>
-</script>
+        <li class="file">
+            <a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
+                <span class="file-image">
+                    <img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewheight}}height="{{attr:previewHeight}}" {{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
+                </span>
+                <span class="file-name">{{>fileName}}</span>
+            </a>
+        </li>
+    </script>
     <script>
-        $(function() {
+        $(function () {
             $('#result').pageloader({
                 url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})",
                 template: "#file-template",
                 loading: "#loading",
-                selector: function(data) { return data.files; },
-                onComplete: function() {
+                selector: function (data) { return data.files; },
+                onComplete: function () {
                     var msnry = new Masonry('.files', {});
                 }
             });
+
+            $.views.converters("monthName", function (val) {
+                var monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+                ];
+                return monthNames[val - 1];
+            });
+
+            $(".monthInfo").on("change", "#month", function () {
+                var update = new Object();
+                // update.month = new Object();
+                update.month = $(this).val();
+                $.ajax({
+                    url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name })",
+                    dataType: 'json',
+                    type: 'PUT',
+                    data: update
+
+                }).done(function() {
+                    $(".monthInfo").find(".view").show();
+                    $(".monthInfo").find("span.edit").hide();
+                });
+            });
+
             @if (Convert.ToBoolean(WebConfigurationManager.AppSettings["EnableGallery"]))
             {
                 <text>
 
-        $('#result').gallery({
-            images: 'a.thumbs',
-            rel: 'thumbs',
-            loadMore: function(finished) {
-                $('#result').pageloader('load', finished);
-            }
-        });
-		</text>
+            $('#result').gallery({
+                images: 'a.thumbs',
+                rel: 'thumbs',
+                loadMore: function (finished) {
+                    $('#result').pageloader('load', finished);
+                }
+            });
+            </text>
             }
         });
     </script>
-    
+
     <script id="group-template" type="text/x-jsrender">
-    <label for="groups">Group: </label>
-    <span class="view">
-        <ul class="list">
-            {{if group}}
-            <li class="group">
-                <a href="@Url.RootUrl(){{:group.url}}">{{:group.name}}</a>
-            </li>
-            {{else}}
-            <li class="group">
-                <a>Unknown</a>
-            </li>
-            {{/if}}
-        </ul>
-        (@if (Request.IsAuthenticated)
-         {<text><a href="#" class="edit">Edit</a></text>}
-         else
-         {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new {id = "loginLink"})</text>})
-    </span>
-    <span class="edit">
-        <input type="hidden" class="groups" id="groups" data-groups="{{:~json(groups)}}" />
-    </span>
+        <label for="groups">Group: </label>
+        <span class="view">
+            <ul class="list">
+                {{if group}}
+                <li class="group">
+                    <a href="@Url.RootUrl(){{:group.url}}">{{:group.name}}</a>
+                </li>
+                {{else}}
+                <li class="group">
+                    <a>Unknown</a>
+                </li>
+                {{/if}}
+            </ul>
+            (@if (Request.IsAuthenticated) {<text><a href="#" class="edit">Edit</a></text>} else {<text>@Html.ActionLink("Log in to edit", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</text>})
+        </span>
+        <span class="edit">
+            <input type="hidden" class="groups" id="groups" data-groups="{{:~json(groups)}}" />
+        </span>
 
 
-</script>
+    </script>
 
     <script>
         var template = $.templates("#group-template");
-        $(function() {
+        $(function () {
+            $(".monthInfo").pageloader({
+                url: '@Url.RouteUrl("api", new { httproute = "", Controller = "Pack", id = Model.Name})',
+                template: "#month-template",
+                loading: "#loading",
+                selector: function(data) { return data; },
+                enableScroll: false
+        });
+
             $(".groupInfo").pageloader({
                 url: '@Url.RouteUrl("api", new {httproute = "", Controller = "Pack", id = Model.Name})',
                 template: "#group-template",
                 loading: "#loading",
-                selector: function(data) { return data; },
+                selector: function (data) { return data; },
                 enableScroll: false,
-                onComplete: function() {
+                onComplete: function () {
                     $(".groups").select2({
                         placeholder: "Select the group",
                         minimumInputLength: 1,
-                        initSelection: function(element, callback) {
+                        initSelection: function (element, callback) {
                             var data = [];
                             data.groups = $(element).data("groups");
                             callback(data);
@@ -103,8 +156,8 @@
                         //    data.results.push({ text: query.term, id: query.term });
                         //    query.callback(data);
                         //},
-                        createSearchChoice: function(term, data) {
-                            if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
+                        createSearchChoice: function (term, data) {
+                            if ($(data).filter(function () { return this.text.localeCompare(term) === 0; }).length === 0) {
                                 return { id: term, text: term }
                             }
                         },
@@ -112,15 +165,15 @@
                             url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Group"})",
                             dataType: 'json',
                             type: 'GET',
-                            data: function(term, page) {
+                            data: function (term, page) {
                                 return {
                                     query: term,
                                     // size: 10
                                 };
                             },
-                            results: function(data, page) {
+                            results: function (data, page) {
                                 return {
-                                    results: $.map(data.groups, function(item) {
+                                    results: $.map(data.groups, function (item) {
                                         return {
                                             text: item.name,
                                             slug: item.slug,
@@ -135,7 +188,7 @@
                 }
             });
 
-            $(".groupInfo").on("change", function(e) {
+            $(".groupInfo").on("change", function (e) {
                 var update = new Object();
                 update.group = new Object();
                 if (e.added) {
@@ -144,7 +197,7 @@
                         url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Name})",
                         data: update,
                         type: 'PUT',
-                        success: function(data) {
+                        success: function (data) {
                             $(".groupInfo").html($.templates("#group-template").render(data));
                         }
                     });
@@ -154,7 +207,7 @@
                         url: "@Url.RouteUrl("apipath", new {httproute = "", Controller = "Pack", id = @Model.Name})",
                         data: update,
                         type: 'DELETE',
-                        success: function(data) {
+                        success: function (data) {
                             $(".groupInfo").html($.templates("#group-template").render(data));
                         }
 
@@ -162,20 +215,26 @@
                 }
                 // Update the "view" rendered content
                 var data = [];
-                $(e.val).each(function() {
+                $(e.val).each(function () {
                     data.push({ id: this, text: this });
                 });
                 $(".groupInfo").html($.templates("#group-template").render(data));
             });
 
+            $(".monthInfo").on("click", "a.edit", function(e) {
+                $(this).parents(".monthInfo").find("span.edit").show();
+                $(this).parents(".view").hide();
+
+            });
+
             // Show tag editor when "Edit" is clicked
-            $(".groupInfo").on("click", "a.edit", function(e) {
+            $(".groupInfo").on("click", "a.edit", function (e) {
                 $(this).parents(".groupInfo").find("span.edit").show();
                 $(this).parents(".view").hide();
             });
 
             // Hide tag editor when user clicks out of select2
-            $(".groupInfo").on("select2-blur", ".groups", function(e) {
+            $(".groupInfo").on("select2-blur", ".groups", function (e) {
                 $(this).parents(".groupInfo").find(".view").show();
                 $(this).parents(".groupInfo").find("span.edit").hide();
             });
@@ -197,4 +256,3 @@
 
 
 
-    

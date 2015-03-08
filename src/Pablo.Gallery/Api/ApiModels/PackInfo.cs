@@ -65,6 +65,14 @@ namespace Pablo.Gallery.Api.ApiModels
 		[JsonConverter(typeof(DateOnlyConverter))]
 		public DateTime? Date { get { return pack.Date; } set { } }
 
+        [DataMember(Name = "month")]
+        public int Month { get
+        {
+            return pack.Date != null ? pack.Date.Value.Month : 0;
+        }
+            set { }
+        }
+
 		[DataMember(Name = "group")]
 		public GroupSummary Group { get; set; }
 
@@ -113,5 +121,7 @@ namespace Pablo.Gallery.Api.ApiModels
 
         [DataMember(Name = "group")]
         public GroupMeta Group { get; set; }
+        [DataMember(Name = "month")]
+        public int? Month { get; set; }
     }
 }

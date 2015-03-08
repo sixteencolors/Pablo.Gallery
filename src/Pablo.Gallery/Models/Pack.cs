@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 
 namespace Pablo.Gallery.Models
@@ -53,8 +54,7 @@ namespace Pablo.Gallery.Models
 		[InverseProperty("Pack")]
 		public virtual ICollection<File> Files { get; set; }
 
-
-		public string PreviewUrl(float? zoom = null, int? maxWidth = null)
+	    public string PreviewUrl(float? zoom = null, int? maxWidth = null)
 		{
 			if (Thumbnail != null)
 			{

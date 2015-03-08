@@ -279,7 +279,28 @@ h2 {
 	width: auto;
 }
 
-.artistInfo, .tagInfo, .groupInfo {
+.monthInfo {
+    .view {
+        .basicMeta {
+		    float: left;
+		    margin: 0 1em 1em 0;
+		    background: @cyan;
+		    color: @black;
+		    a {
+			    padding: .5em 1em;
+			    color: @black;
+			    text-decoration: none;
+			    display: block;
+		    }
+		    a:hover {
+			    background: @cyan_i;
+		    }
+
+        }
+    }
+
+}
+.artistInfo, .tagInfo, .groupInfo, .monthInfo {
 	.view {
 		float: left;
 	}
