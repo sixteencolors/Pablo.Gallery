@@ -19,7 +19,7 @@ namespace Pablo.Gallery.Api.ApiModels {
         public string Url { get { return "/group/" + Group.Slug; } set { } }
 
         [DataMember(Name = "name")]
-        public string Alias { get { return Group.Name; } set { } }
+        public string Name { get { return Group.Name; } set { } }
 
         [DataMember(Name = "slug")]
         public string Slug { get { return Group.Slug; } set { } }

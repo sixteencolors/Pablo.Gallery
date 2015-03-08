@@ -1,12 +1,13 @@
 ﻿@using System.Web.Configuration
-@model Pablo.Gallery.Models.Artist
+@model Pablo.Gallery.Models.Group
 
 @{
-    ViewBag.Title = @Model.Alias;
+    ViewBag.Title = @Model.Name;
 }
 
 @section SecondaryHeader {
-    <h2>@Model.Alias</h2>
+    <h2>@Model.Name</h2>
+    
 }
 
 <ul id="result" class="files"></ul>
@@ -14,13 +15,13 @@
 
 @section Scripts {
     @Scripts.Render("~/Scripts/masonry.pkgd.js")
-    <script id="file-template" type="text/x-jsrender">
+    <script id="pack-template" type="text/x-jsrender">
         <li class="file">
-            <a href="@Url.RootUrl(){{attr:url}}" class="thumbs" data-img="@Url.RootUrl(){{attr:displayUrl}}" data-type="{{attr:displayType}}" data-download="@Url.RootUrl(){{attr:downloadUrl}}">
+            <a href="@Url.RootUrl(){{attr:url}}">
                 <span class="file-image">
-                    <img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewHeight}}height="{{attr:previewHeight}}" {{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
+                    <img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewheight}}height="{{attr:previewHeight}}" {{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
                 </span>
-                <span class="file-name">{{>fileName}}</span>
+                <span class="file-name">{{>name}}</span>
             </a>
         </li>
     </script>
@@ -28,10 +29,10 @@
     <script>
         $(function () {
             $('#result').pageloader({
-                url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Artist", id = Model.Slug})",
-                template: "#file-template",
+                url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Group", id = Model.Slug})",
+                template: "#pack-template",
                 loading: "#loading",
-                selector: function (data) { return data.files; },
+                selector: function (data) { return data.packs; },
                 onComplete: function () {
                     var msnry = new Masonry('.files', {});
                 }

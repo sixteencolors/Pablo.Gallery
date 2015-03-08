@@ -26,7 +26,8 @@ namespace Pablo.Gallery.Api.ApiModels
 		public PackSummary(Models.Pack pack)
 		{
 			this.pack = pack;
-		    this.Group = new GroupSummary(this.pack.Group);
+            if (pack.Group != null)
+		        Group = new GroupSummary(this.pack.Group);
 		}
 
 		[DataMember(Name = "url")]
