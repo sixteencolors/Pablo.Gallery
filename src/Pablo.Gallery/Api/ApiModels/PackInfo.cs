@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 using System.Web.Mvc;
@@ -26,8 +27,11 @@ namespace Pablo.Gallery.Api.ApiModels
 		public PackSummary(Models.Pack pack)
 		{
 			this.pack = pack;
-            if (pack.Group != null)
-		        Group = new GroupSummary(this.pack.Group);
+
+            // TODO: Figure out why trying to do this here causes an exception that does not bubble up when making the comparison to null if pack.Group is not null
+            //if (pack.Group != null)
+            //    Group = new GroupSummary(pack.Group);
+               
 		}
 
 		[DataMember(Name = "url")]
@@ -78,10 +82,12 @@ namespace Pablo.Gallery.Api.ApiModels
 	[DataContract(Name = "pack")]
 	public class PackDetail : PackSummary
 	{
-		public PackDetail(Models.Pack p, int page = 0, int size = Global.DefaultPageSize)
-			: base(p)
+		public PackDetail(Models.Pack pack, int page = 0, int size = Global.DefaultPageSize)
+			: base(pack)
 		{
-			Files = (from f in p.Files
+            if (pack.Group != null)
+                Group = new GroupSummary(pack.Group);
+            Files = (from f in pack.Files
 			         orderby f.Order
 			         select new FileSummary(f)).Skip(page * size).Take(size);
 		}
