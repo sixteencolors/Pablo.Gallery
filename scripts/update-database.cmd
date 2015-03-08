@@ -23,7 +23,7 @@ copy /Y %EF_DIR%\lib\net40\*.* %TMP_DIR% > nul
 
 echo Updating database...
 cd %OUTPUT_DIR%
-%TMP_DIR%\migrate.exe %CONTEXT_DLL% /startupDirectory="%OUTPUT_DIR%" /startupConfigurationFile=../Web.config %*
+%TMP_DIR%\migrate.exe %CONTEXT_DLL% /startupDirectory="%OUTPUT_DIR%" /trace /startupConfigurationFile=../Web.config %*
 
 echo Cleaning up...
 cd %OLDDIR%
