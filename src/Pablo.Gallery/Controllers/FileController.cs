@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Pablo.Gallery.Controllers
 {
-	public class FileController : Controller
+    public class FileController : GalleryController
 	{
 		public ActionResult Index(string format = null, string type = null, string query = null, string q = null, string keyword = null)
 		{

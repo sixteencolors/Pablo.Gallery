@@ -7,9 +7,8 @@ using Pablo.Gallery.Models;
 
 namespace Pablo.Gallery.Controllers
 {
-    public class ArtistController : Controller
+    public class ArtistController : GalleryController
     {
-        readonly GalleryContext db = new GalleryContext();
 
         public ActionResult Detail(string artist)
         {

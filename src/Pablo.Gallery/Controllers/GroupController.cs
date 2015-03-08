@@ -7,10 +7,8 @@ using Pablo.Gallery.Models;
 
 namespace Pablo.Gallery.Controllers
 {
-    public class GroupController : Controller
+    public class GroupController : GalleryController
     {
-        readonly GalleryContext db = new GalleryContext();
-
         public ActionResult Detail(string group)
         {
             var model = db.Groups.FirstOrDefault(g => g.Slug == group);
