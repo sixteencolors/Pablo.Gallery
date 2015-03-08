@@ -23,6 +23,19 @@ namespace Pablo.Gallery
 				defaults: new { controller = "Pack", action = "Detail" }
 			);
 
+		    routes.MapRoute(
+		        name: "Artist",
+		        url: "artist/{artist}",
+		        defaults: new {controller = "Artist", action = "Detail"}
+		    );
+
+
+            routes.MapRoute(
+                name: "Group",
+                url: "group/{group}",
+                defaults: new { controller = "Group", action = "Detail" }
+            );
+
             // Legacy Sixteen Colors route
 		    routes.MapRoute(
 		        name: "Search",

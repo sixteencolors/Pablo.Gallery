@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Web;
-using Humanizer;
 using Pablo.Gallery.Models;
 
 namespace Pablo.Gallery.Api.ApiModels {
 	[DataContract(Name = "artist")]
 	public class ArtistSummary
 	{
-		public Models.Artist Artist;
+		public Artist Artist;
 
-		public ArtistSummary(Models.Artist artist)
+		public ArtistSummary(Artist artist)
 		{
 			Artist = artist;
 		}
@@ -30,7 +28,7 @@ namespace Pablo.Gallery.Api.ApiModels {
 	[DataContract(Name = "artist")]
 	public class ArtistDetail : ArtistSummary
 	{
-		public ArtistDetail(Models.Artist artist, int page = 0, int size = Global.DefaultPageSize):base(artist)
+		public ArtistDetail(Artist artist, int page = 0, int size = Global.DefaultPageSize):base(artist)
 		{
 			Files = (from fa in artist.Files
 				select new FileSummary(fa.File)).Skip(page*size).Take(size);
@@ -46,4 +44,10 @@ namespace Pablo.Gallery.Api.ApiModels {
 		[DataMember(Name = "artists")]
 		public IEnumerable<ArtistSummary> Artists { get; set; }
 	}
+
+    public class ArtistMeta {
+        [DataMember(Name = "alias")]
+        public string Alias { get; set; }
+    }
+
 }

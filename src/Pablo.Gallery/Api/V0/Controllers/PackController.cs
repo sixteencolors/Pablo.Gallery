@@ -1,6 +1,8 @@
-﻿using Pablo.Gallery.Api.ApiModels;
-using Pablo.Gallery.Logic;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Pablo.Gallery.Api.ApiModels;
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,9 +14,6 @@ using Pablo.Gallery.Logic.Converters;
 using Pablo.Gallery.Logic.Extractors;
 using Pablo.Gallery.Models;
 using Pablo.Gallery.Logic.Filters;
-using Pablo.Gallery.Logic.Selectors;
-using System.Web;
-using System.Collections.Generic;
 
 namespace Pablo.Gallery.Api.V0.Controllers
 {
@@ -98,46 +97,108 @@ namespace Pablo.Gallery.Api.V0.Controllers
 			}
 		}
 
-		// Add/remove an artist from a file
+        // Add/remove metadata for a pack
+        // PackMetaData allows us to read any json -- we cannot have separate controllers with different objects for the data passed in
+        // because MVC is not able to decipher the different object types. Instead we setup a json structure that allows for 
+        // various attributes that need to be assigned to a pack
+        // Only using HttpPut and not HttpPost because I had trouble getting the post body and the put uri data at the same time
+        [HttpPut, HttpDelete, EnableCors]
+        [Authorize]
+        public PackDetail Index([FromUri(Name = "id")] string pack, PackMetaUpdate update)
+        {
+            var file = db.Packs.FirstOrDefault(p => p.Name == pack);
+            if (update.Group != null)
+            {
+                var group = update.Group;
+                group.Name = group.Name.Trim();
+                if (file != null)
+                {
+                    var groupRecord = db.Groups.FirstOrDefault(g => g.Name == group.Name) ?? db.Groups.Add(new Group() { Name = group.Name});
+                    file.Group = Request.Method != HttpMethod.Delete ? groupRecord : null;
+                }
+            }
+            db.SaveChanges();
+            //var artists = file != null ? from a in db.Artists
+            //							 join fa in db.FileArtists on a.Id equals fa.ArtistId
+            //							 where fa.FileId == file.Id && !fa.IsDeleted
+            //							 orderby a.Alias
+            //							 select a : null;
+            return new PackDetail(file);
+            //return new ArtistResult {
+            //    Artists = (from a in artists.AsEnumerable()
+            //               select new ArtistSummary(a)).ToList()
+            //};
+            // do nothing if the relationship already exists and is not deleted
+        }
+
+
+		// Add/remove metadata for a file
+        // PackMetaData allows us to read any json -- we cannot have separate controllers with different objects for the data passed in
+        // because MVC is not able to decipher the different object types. Instead we setup a json structure that allows for 
+        // various attributes that need to be assigned to a pack
 		// Only using HttpPut and not HttpPost because I had trouble getting the post body and the put uri data at the same time
 		[HttpPut, HttpDelete, EnableCors]
 		[Authorize]
-		public ArtistResult Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, [FromUri] Artist artist)
+		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name, PackMetaUpdate update)
 		{
-			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
-			artist.Alias = artist.Alias.Trim();
-			if (file != null)
-			{
-				var artistRecord = db.Artists.FirstOrDefault(a => a.Alias == artist.Alias) ?? db.Artists.Add(new Artist {Alias = artist.Alias});
-				var fileArtist = file.Artists.FirstOrDefault(fa => fa.Artist.Id == artistRecord.Id && fa.FileId == file.Id);
+            var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+            if (update.Artist != null)
+		    {
+		        var artist = update.Artist;
+                artist.Alias = artist.Alias.Trim();
+                if (file != null) {
+                    var artistRecord = db.Artists.FirstOrDefault(a => a.Alias == artist.Alias) ?? db.Artists.Add(new Artist { Alias = artist.Alias });
+                    var fileArtist = file.Artists.FirstOrDefault(fa => fa.Artist.Id == artistRecord.Id && fa.FileId == file.Id);
 
-				if (fileArtist == null && Request.Method != HttpMethod.Delete)
-					db.FileArtists.Add(new FileArtist { ArtistId = artistRecord.Id, FileId = file.Id });
-				else if (fileArtist != null && fileArtist.IsDeleted && Request.Method != HttpMethod.Delete)
-					fileArtist.IsDeleted = false;
-				else if (fileArtist != null && Request.Method == HttpMethod.Delete)
-					fileArtist.IsDeleted = true;
+                    if (fileArtist == null && Request.Method != HttpMethod.Delete)
+                        db.FileArtists.Add(new FileArtist { ArtistId = artistRecord.Id, FileId = file.Id });
+                    else if (fileArtist != null && fileArtist.IsDeleted && Request.Method != HttpMethod.Delete)
+                        fileArtist.IsDeleted = false;
+                    else if (fileArtist != null && Request.Method == HttpMethod.Delete)
+                        fileArtist.IsDeleted = true;
 
-				db.SaveChanges();
-				//file = db.Files.FirstOrDefault(f => f.Id == file.Id);
-			}
-			var artists = file != null ? from a in db.Artists
-										 join fa in db.FileArtists on a.Id equals fa.ArtistId
-										 where fa.FileId == file.Id && !fa.IsDeleted
-										 orderby a.Alias
-										 select a : null;
+                    //file = db.Files.FirstOrDefault(f => f.Id == file.Id);
+                }
+		    }
+		    if (update.Tag != null)
+		    {
+		        var tag = update.Tag;
+		        tag.Name = tag.Name.Trim();
+		        if (file != null)
+		        {
+		            var tagRecord = db.Tags.FirstOrDefault(t => t.Name == tag.Name) ?? db.Tags.Add(new Tag {Name = tag.Name});
+		            var fileTag = file.Tags.FirstOrDefault(ft => ft.Tag.Id == tagRecord.Id && ft.FileId == file.Id);
 
-			return new ArtistResult {
-				Artists = (from a in artists.AsEnumerable()
-						   select new ArtistSummary(a)).ToList()
-			};
+		            if (fileTag == null && Request.Method != HttpMethod.Delete)
+		                db.FileTags.Add(new FileTag {TagId = tagRecord.Id, FileId = file.Id});
+                    else if (fileTag != null && fileTag.IsDeleted && Request.Method != HttpMethod.Delete)
+                        fileTag.IsDeleted = false;
+                    else if (fileTag != null && Request.Method == HttpMethod.Delete)
+                        fileTag.IsDeleted = true;
+
+		        }
+		    }
+            db.SaveChanges();
+            //var artists = file != null ? from a in db.Artists
+            //							 join fa in db.FileArtists on a.Id equals fa.ArtistId
+            //							 where fa.FileId == file.Id && !fa.IsDeleted
+            //							 orderby a.Alias
+            //							 select a : null;
+            return new FileDetail(file);
+            //return new ArtistResult {
+            //    Artists = (from a in artists.AsEnumerable()
+            //               select new ArtistSummary(a)).ToList()
+            //};
 			// do nothing if the relationship already exists and is not deleted
 		}
 		
 		[HttpGet, EnableCors]
 		public FileDetail Index([FromUri(Name = "id")] string pack, [FromUri(Name = "path")] string name)
 		{
-			var file = db.Files.FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
+            // HACK: For the life of me I could not get Tags to load without eagerly loading them. Artists, which seem
+            // to be defined in the exact same way, load lazily without issue. (although I don't love lazy loading so that is a whole
+            // other issue
+			var file = db.Files.Include(f => f.Tags.Select(ft => ft.Tag)).FirstOrDefault(r => r.Pack.Name == pack && r.Name == name);
 			if (file == null)
 				throw new HttpResponseException(HttpStatusCode.NotFound);
 			return new FileDetail(file);

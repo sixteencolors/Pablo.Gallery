@@ -256,14 +256,21 @@
   <ItemGroup>
     <Compile Include="Api\ApiModels\ArtistInfo.cs" />
     <Compile Include="Api\ApiModels\FileInfo.cs" />
+    <Compile Include="Api\ApiModels\GroupInfo.cs" />
     <Compile Include="Api\ApiModels\PackInfo.cs" />
+    <Compile Include="Api\ApiModels\TagInfo.cs" />
     <Compile Include="Api\ApiModels\YearInfo.cs" />
     <Compile Include="Api\V0\Controllers\ArtistController.cs" />
+    <Compile Include="Api\V0\Controllers\GroupController.cs" />
+    <Compile Include="Api\V0\Controllers\TagController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ArtistController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\GalleryController.cs" />
+    <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -305,6 +312,22 @@
     <Compile Include="Migrations\201407281058139_AddArtistSlug.cs" />
     <Compile Include="Migrations\201407281058139_AddArtistSlug.Designer.cs">
       <DependentUpon>201407281058139_AddArtistSlug.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408231451047_TagChanges.cs" />
+    <Compile Include="Migrations\201408231451047_TagChanges.Designer.cs">
+      <DependentUpon>201408231451047_TagChanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503051940537_CleanupTags.cs" />
+    <Compile Include="Migrations\201503051940537_CleanupTags.Designer.cs">
+      <DependentUpon>201503051940537_CleanupTags.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503071546286_FixGroupNameProperty.cs" />
+    <Compile Include="Migrations\201503071546286_FixGroupNameProperty.Designer.cs">
+      <DependentUpon>201503071546286_FixGroupNameProperty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503072029224_RemoveErrantRelationship.cs" />
+    <Compile Include="Migrations\201503072029224_RemoveErrantRelationship.Designer.cs">
+      <DependentUpon>201503072029224_RemoveErrantRelationship.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
@@ -609,6 +632,10 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Artist\Detail.cshtml" />
+    <Content Include="Views\Group\Detail.cshtml" />
+    <Content Include="Views\Group\Index.cshtml" />
+    <Content Include="Views\Artist\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -670,6 +697,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407281058139_AddArtistSlug.resx">
       <DependentUpon>201407281058139_AddArtistSlug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408231451047_TagChanges.resx">
+      <DependentUpon>201408231451047_TagChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503051940537_CleanupTags.resx">
+      <DependentUpon>201503051940537_CleanupTags.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503071546286_FixGroupNameProperty.resx">
+      <DependentUpon>201503071546286_FixGroupNameProperty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503072029224_RemoveErrantRelationship.resx">
+      <DependentUpon>201503072029224_RemoveErrantRelationship.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

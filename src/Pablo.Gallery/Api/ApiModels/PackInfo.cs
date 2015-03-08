@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 using System.Web.Mvc;
@@ -25,6 +27,11 @@ namespace Pablo.Gallery.Api.ApiModels
 		public PackSummary(Models.Pack pack)
 		{
 			this.pack = pack;
+
+            // TODO: Figure out why trying to do this here causes an exception that does not bubble up when making the comparison to null if pack.Group is not null
+            //if (pack.Group != null)
+            //    Group = new GroupSummary(pack.Group);
+               
 		}
 
 		[DataMember(Name = "url")]
@@ -58,8 +65,8 @@ namespace Pablo.Gallery.Api.ApiModels
 		[JsonConverter(typeof(DateOnlyConverter))]
 		public DateTime? Date { get { return pack.Date; } set { } }
 
-		[DataMember(Name = "groups")]
-		public string[] Groups { get; set; }
+		[DataMember(Name = "group")]
+		public GroupSummary Group { get; set; }
 
 		[DataMember(Name = "fileName")]
 		public string FileName { get { return pack.FileName; } set { } }
@@ -75,10 +82,12 @@ namespace Pablo.Gallery.Api.ApiModels
 	[DataContract(Name = "pack")]
 	public class PackDetail : PackSummary
 	{
-		public PackDetail(Models.Pack p, int page = 0, int size = Global.DefaultPageSize)
-			: base(p)
+		public PackDetail(Models.Pack pack, int page = 0, int size = Global.DefaultPageSize)
+			: base(pack)
 		{
-			Files = (from f in p.Files
+            if (pack.Group != null)
+                Group = new GroupSummary(pack.Group);
+            Files = (from f in pack.Files
 			         orderby f.Order
 			         select new FileSummary(f)).Skip(page * size).Take(size);
 		}
@@ -93,4 +102,16 @@ namespace Pablo.Gallery.Api.ApiModels
 		[DataMember(Name = "packs")]
 		public IEnumerable<PackSummary> Packs { get; set; }
 	}
+
+    public class PackMetaUpdate
+    {
+        [DataMember(Name = "artist")]
+        public ArtistMeta Artist { get; set; }
+
+        [DataMember(Name = "tag")]
+        public TagMeta Tag { get; set; }
+
+        [DataMember(Name = "group")]
+        public GroupMeta Group { get; set; }
+    }
 }

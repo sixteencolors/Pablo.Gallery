@@ -56,7 +56,7 @@ body {
 	}
 }
 
-.page-pack-detail, .page-year-detail, .page-file-index, .page-pack-index, .page-home-index
+.page-pack-detail, .page-year-detail, .page-file-index, .page-pack-index, .page-home-index, .page-artist-detail, .page-group-detail
 {
 	.files {
 		.clearfix();
@@ -203,15 +203,28 @@ a.btn-default {
 	background-color: lightgrey;
 }
 
-.page-year-index {
-	.year .btn {
+.page-year-index, .page-group-index, .page-artist-index {
+	.year .btn, .group .btn, .artist .btn {
 		width: 18em;
 		white-space: normal;
 		/* vertical-align: bottom; */
 	}
 }
 
-.page-year-index, .page-pack-index {
+.page-group-index, .page-artist-index {
+    ul.groups, ul.artists {
+        list-style-type: none;
+        -webkit-columns: 18em auto;
+        -moz-columns: 18em auto;
+        columns: 18em auto;
+        li.group, li.artist {
+            display: block;
+            margin: 5px;
+        }
+    }
+}
+
+.page-year-index, .page-pack-index, .page-group-detail {
 
 	ul.years {
 		.clearfix();
@@ -266,7 +279,7 @@ h2 {
 	width: auto;
 }
 
-.artistInfo {
+.artistInfo, .tagInfo, .groupInfo {
 	.view {
 		float: left;
 	}

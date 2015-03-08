@@ -5,9 +5,8 @@ using Newtonsoft.Json;
 
 namespace Pablo.Gallery.Controllers
 {
-	public class PackController : Controller
+    public class PackController : GalleryController
 	{
-		readonly Models.GalleryContext db = new Models.GalleryContext();
 
 		public ActionResult Index(string query = null, int? year = null)
 		{

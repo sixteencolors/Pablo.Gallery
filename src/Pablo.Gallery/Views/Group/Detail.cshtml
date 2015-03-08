@@ -1,0 +1,57 @@
+﻿@using System.Web.Configuration
+@model Pablo.Gallery.Models.Group
+
+@{
+    ViewBag.Title = @Model.Name;
+}
+
+@section SecondaryHeader {
+    <h2>@Model.Name</h2>
+    
+}
+
+<ul id="result" class="files"></ul>
+<div id="loading">Loading...</div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/masonry.pkgd.js")
+    <script id="pack-template" type="text/x-jsrender">
+        <li class="file">
+            <a href="@Url.RootUrl(){{attr:url}}">
+                <span class="file-image">
+                    <img src="@Url.RootUrl(){{attr:previewUrl}}" {{if previewheight}}height="{{attr:previewHeight}}" {{/if}} {{if previewWidth}}width="{{attr:previewWidth}}"{{/if}} />
+                </span>
+                <span class="file-name">{{>name}}</span>
+            </a>
+        </li>
+    </script>
+
+    <script>
+        $(function () {
+            $('#result').pageloader({
+                url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Group", id = Model.Slug})",
+                template: "#pack-template",
+                loading: "#loading",
+                selector: function (data) { return data.packs; },
+                onComplete: function () {
+                    var msnry = new Masonry('.files', {});
+                }
+            });
+            @if (Convert.ToBoolean(WebConfigurationManager.AppSettings["EnableGallery"]))
+                {
+                    <text>
+
+            $('#result').gallery({
+                images: 'a.thumbs',
+                rel: 'thumbs',
+                loadMore: function (finished) {
+                    $('#result').pageloader('load', finished);
+                }
+            });
+            </text>
+                }
+        });
+    </script>
+
+
+}
