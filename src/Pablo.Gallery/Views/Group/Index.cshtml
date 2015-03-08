@@ -8,7 +8,7 @@
 @section Scripts {
     <script id="groups-template" type="text/x-jsrender">
         <li class="group">
-            <a href="@Url.RouteUrl(ViewContext.RouteData.Values)/{{attr:name}}" title="{{attr:name}}" class="btn btn-default group-select" data-group="{{attr:name}}">
+            <a href="@Url.RouteUrl(ViewContext.RouteData.Values)/{{attr:slug}}" title="{{attr:name}}" class="btn btn-default group-select" data-group="{{attr:name}}">
                 <span class="file-name">{{>name}}</span>
             </a>
         </li>
@@ -18,8 +18,8 @@
         $('#groups-result').pageloader({
             url: "@Url.RouteUrl("api", new { httproute="", Controller = "group"})",
             template: "#groups-template",
-        infiniteScroll: false,
-        selector: function(data) { return data.groups; }
+            infiniteScroll: false,
+            selector: function(data) { return data.groups; }
         });
         
     </script>

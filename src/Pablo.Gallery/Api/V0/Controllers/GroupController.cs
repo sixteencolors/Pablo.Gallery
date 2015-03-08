@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -15,7 +16,11 @@ namespace Pablo.Gallery.Api.V0.Controllers
         private readonly Models.GalleryContext db = new Models.GalleryContext();
         [System.Web.Http.HttpGet, EnableCors]
         public GroupResult Index(int page = 0, int size = Global.DefaultPageSize) {
-            var groups = from g in db.Groups orderby g.Name select g;
+            var query = Request.GetQueryNameValuePairs().FirstOrDefault(q => q.Key == "query");
+            var groups = from g in db.Groups
+                         where string.IsNullOrEmpty(query.Value) || g.Name.Contains(query.Value)
+                         orderby g.Name 
+                         select g;
             var results = size > 0 ? groups.Skip(page * size).Take(size).AsEnumerable() : groups;
             return new GroupResult {
                 Groups = (from @group in results

@@ -634,6 +634,7 @@
     <Content Include="Views\Artist\Detail.cshtml" />
     <Content Include="Views\Group\Detail.cshtml" />
     <Content Include="Views\Group\Index.cshtml" />
+    <Content Include="Views\Artist\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

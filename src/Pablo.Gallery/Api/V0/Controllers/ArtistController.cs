@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using Pablo.Gallery.Api.ApiModels;
 using Pablo.Gallery.Logic.Filters;
@@ -13,7 +14,11 @@ namespace Pablo.Gallery.Api.V0.Controllers
 	    [HttpGet, EnableCors]
 	    public ArtistResult Index(int page = 0, int size = Global.DefaultPageSize)
 	    {
-		    var artists = from a in db.Artists orderby a.Alias select a;
+	        var query = Request.GetQueryNameValuePairs().FirstOrDefault(q => q.Key == "query");
+		    var artists = from a in db.Artists
+                          orderby a.Alias
+                          where string.IsNullOrEmpty(query.Value) || a.Alias.Contains(query.Value)
+                          select a;
 			var results = size > 0 ? artists.Skip(page * size).Take(size).AsEnumerable() : artists;
 		    return new ArtistResult
 		    {

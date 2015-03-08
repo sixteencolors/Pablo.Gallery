@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "Artists";
+}
+
+<h2>Artists</h2>
+<ul id="artists-result" class="artists"></ul>
+
+@section Scripts {
+    <script id="artists-template" type="text/x-jsrender">
+        <li class="artist">
+            <a href="@Url.RouteUrl(ViewContext.RouteData.Values)/{{attr:slug}}" title="{{attr:alias}}" class="btn btn-default artist-select" data-artist="{{attr:name}}">
+                <span class="file-name">{{>alias}}</span>
+            </a>
+        </li>
+    </script>
+
+    <script>
+            $('#artists-result').pageloader({
+                url: "@Url.RouteUrl("api", new { httproute="", Controller = "artist"})",
+                template: "#artists-template",
+                infiniteScroll: false,
+                selector: function(data) { return data.artists; }
+            });
+
+    </script>
+    
+}

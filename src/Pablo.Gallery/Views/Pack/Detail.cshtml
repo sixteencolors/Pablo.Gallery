@@ -98,16 +98,16 @@
                             data.groups = $(element).data("groups");
                             callback(data);
                         },
-                        query: function(query) {
-                            var data = { results: [] };
-                            data.results.push({ text: query.term, id: query.term });
-                            query.callback(data);
-                        },
-                        /*createSearchChoice: function(term, data) {
+                        //query: function(query) {
+                        //    var data = { results: [] };
+                        //    data.results.push({ text: query.term, id: query.term });
+                        //    query.callback(data);
+                        //},
+                        createSearchChoice: function(term, data) {
                             if ($(data).filter(function() { return this.text.localeCompare(term) === 0; }).length === 0) {
                                 return { id: term, text: term }
                             }
-                        },*/
+                        },
                         ajax: {
                             url: "@Url.RouteUrl("api", new {httproute = "", Controller = "Group"})",
                             dataType: 'json',
@@ -122,9 +122,9 @@
                                 return {
                                     results: $.map(data.groups, function(item) {
                                         return {
-                                            text: item.alias,
+                                            text: item.name,
                                             slug: item.slug,
-                                            id: item.alias
+                                            id: item.name
                                         }
                                     })
                                 };

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using Pablo.Gallery.Api.ApiModels;
 using Pablo.Gallery.Logic.Filters;
@@ -12,7 +13,11 @@ namespace Pablo.Gallery.Api.V0.Controllers
 
 		[HttpGet, EnableCors]
 		public TagResult Index(int page = 0, int size = Global.DefaultPageSize) {
-			var tags = from t in db.Tags orderby t.Name select t;
+            var query = Request.GetQueryNameValuePairs().FirstOrDefault(q => q.Key == "query");
+			var tags = from t in db.Tags
+                       where string.IsNullOrEmpty(query.Value) || t.Name.Contains(query.Value)
+                       orderby t.Name 
+                       select t;
 			var results = size > 0 ? tags.Skip(page * size).Take(size).AsEnumerable() : tags;
 			return new TagResult {
 				Tags = (from tag in results

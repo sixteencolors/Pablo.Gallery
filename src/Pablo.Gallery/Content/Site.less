@@ -203,21 +203,34 @@ a.btn-default {
 	background-color: lightgrey;
 }
 
-.page-year-index, .page-group-index {
-	.year .btn, .group .btn {
+.page-year-index, .page-group-index, .page-artist-index {
+	.year .btn, .group .btn, .artist .btn {
 		width: 18em;
 		white-space: normal;
 		/* vertical-align: bottom; */
 	}
 }
 
-.page-year-index, .page-pack-index, .page-group-detail, .page-group-index {
+.page-group-index, .page-artist-index {
+    ul.groups, ul.artists {
+        list-style-type: none;
+        -webkit-columns: 18em auto;
+        -moz-columns: 18em auto;
+        columns: 18em auto;
+        li.group, li.artist {
+            display: block;
+            margin: 5px;
+        }
+    }
+}
 
-	ul.years, ul.groups {
+.page-year-index, .page-pack-index, .page-group-detail {
+
+	ul.years {
 		.clearfix();
 		list-style-type: none;
 
-		li.year, li.group {
+		li.year {
 			display: block;
 			float: left;
 			margin: 5px;

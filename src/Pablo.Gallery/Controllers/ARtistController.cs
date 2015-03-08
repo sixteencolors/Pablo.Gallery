@@ -9,7 +9,10 @@ namespace Pablo.Gallery.Controllers
 {
     public class ArtistController : GalleryController
     {
-
+        public ActionResult Index()
+        {
+            return View();
+        }
         public ActionResult Detail(string artist)
         {
             var model = db.Artists.FirstOrDefault(a => a.Slug == artist);
