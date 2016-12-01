@@ -5,3 +5,5 @@ packages
 obj
 *.user
 src/Pablo.Gallery/app.config
+/src/Pablo.Gallery/connectionStrings.config
+/src/.vs/config/applicationhost.config

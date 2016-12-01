@@ -329,6 +329,10 @@
     <Compile Include="Migrations\201503072029224_RemoveErrantRelationship.Designer.cs">
       <DependentUpon>201503072029224_RemoveErrantRelationship.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612010222277_odd-keys.cs" />
+    <Compile Include="Migrations\201612010222277_odd-keys.Designer.cs">
+      <DependentUpon>201612010222277_odd-keys.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\AddFullTextIndexOperation.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Extensions.cs" />
@@ -709,6 +713,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503072029224_RemoveErrantRelationship.resx">
       <DependentUpon>201503072029224_RemoveErrantRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612010222277_odd-keys.resx">
+      <DependentUpon>201612010222277_odd-keys.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

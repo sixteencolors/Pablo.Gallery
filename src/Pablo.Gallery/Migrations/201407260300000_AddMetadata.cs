@@ -66,7 +66,7 @@ namespace Pablo.Gallery.Migrations
                 .Index(t => t.Tag_Id);
             
             AddColumn("gallery.Pack", "Group_Id", c => c.Int());
-            AddColumn("gallery.File", "Title", c => c.String(maxLength: 1073741823, fixedLength: true));
+            AddColumn("gallery.File", "Title", c => c.String());
             CreateIndex("gallery.Pack", "Group_Id");
             AddForeignKey("gallery.Pack", "Group_Id", "gallery.Group", "Id");
         }

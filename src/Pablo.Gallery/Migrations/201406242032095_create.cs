@@ -22,7 +22,7 @@ namespace Pablo.Gallery.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(maxLength: 256, fixedLength: true),
-                        FileName = c.String(maxLength: 1073741823, fixedLength: true),
+                        FileName = c.String(maxLength: 260, fixedLength: true),
                         Date = c.DateTime(),
                         Thumbnail_Id = c.Int(),
                     })
@@ -35,8 +35,8 @@ namespace Pablo.Gallery.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(maxLength: 1073741823, fixedLength: true),
-                        FileName = c.String(maxLength: 1073741823, fixedLength: true),
+                        Name = c.String(),
+                        FileName = c.String(maxLength: 260, fixedLength: true),
                         Format = c.String(maxLength: 20, fixedLength: true),
                         Type = c.String(maxLength: 20, fixedLength: true),
                         Order = c.Int(),
@@ -53,7 +53,7 @@ namespace Pablo.Gallery.Migrations
                 c => new
                     {
                         File_Id = c.Int(nullable: false),
-                        Text = c.String(maxLength: 1073741823, fixedLength: true),
+                        Text = c.String(),
                     })
                 .PrimaryKey(t => t.File_Id)
                 .ForeignKey("gallery.File", t => t.File_Id)
@@ -75,20 +75,20 @@ namespace Pablo.Gallery.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         CreateDate = c.DateTime(),
                         LastLoginDate = c.DateTime(),
-                        UserName = c.String(maxLength: 1073741823, fixedLength: true),
-                        Email = c.String(maxLength: 1073741823, fixedLength: true),
-                        Alias = c.String(maxLength: 1073741823, fixedLength: true),
+                        UserName = c.String(maxLength: 256, fixedLength: true),
+                        Email = c.String(maxLength: 254, fixedLength: true),
+                        Alias = c.String(maxLength: 256, fixedLength: true),
                         ConfirmationToken = c.String(maxLength: 128, fixedLength: true),
                         IsConfirmed = c.Boolean(nullable: false),
                         LastPasswordFailureDate = c.DateTime(),
                         Password = c.String(maxLength: 128, fixedLength: true),
                         PasswordFailuresSinceLastSuccess = c.Int(nullable: false),
                         PasswordChangedDate = c.DateTime(),
-                        PasswordSalt = c.String(maxLength: 1073741823, fixedLength: true),
+                        PasswordSalt = c.String(),
                         PasswordVerificationToken = c.String(maxLength: 128, fixedLength: true),
                         PasswordVerificationExpiryDate = c.DateTime(),
-                        PasswordQuestion = c.String(maxLength: 1073741823, fixedLength: true),
-                        PasswordAnswer = c.String(maxLength: 1073741823, fixedLength: true),
+                        PasswordQuestion = c.String(),
+                        PasswordAnswer = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
             
