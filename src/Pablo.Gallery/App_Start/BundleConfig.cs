@@ -24,7 +24,7 @@ namespace Pablo.Gallery
 				"~/Scripts/select2.js"
 			));
 
-			var bundle = new StyleBundle("~/css").Include(
+			var bundle = new StyleBundle("~/css-bundle").Include(
 			    "~/Content/colorbox.css",
 				"~/Content/bootstrap.css",
 				"~/Content/css/select2.css",
