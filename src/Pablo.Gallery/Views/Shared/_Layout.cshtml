@@ -6,7 +6,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@(!string.IsNullOrEmpty(ViewBag.Title) ? ViewBag.Title + " - " : "")@WebConfigurationManager.AppSettings["ApplicationNameLong"]</title>
-	@Styles.Render("~/bundles/css")
+	@Styles.Render("~/bundles/styles")
 	<meta property="og:title" content="@ViewBag.Title" />
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="@WebConfigurationManager.AppSettings["ApplicationNameLong"]"><meta property="og:url" content="@Request.Url.AbsoluteUri" />
