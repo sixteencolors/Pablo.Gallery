@@ -34,11 +34,12 @@ namespace Pablo.Gallery
 			bundle.Transforms.Add(new LessTransform());
 			bundle.Transforms.Add(new CssMinify());
 			bundles.Add(bundle);
+            BundleTable.EnableOptimizations = true;
 
-			bundles.Add(new StyleBundle("~/Content/themes/base/css"));
-		}
+            //bundles.Add(new StyleBundle("~/Content/themes/base/css"));
+        }
 
-		public static void RegisterExternalBundles(BundleCollection bundles)
+        public static void RegisterExternalBundles(BundleCollection bundles)
 		{
 			// bundles used for external viewer
 
