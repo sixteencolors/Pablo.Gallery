@@ -32,9 +32,8 @@ namespace Pablo.Gallery
 			);
 			bundle.Transforms.Clear();
 			bundle.Transforms.Add(new LessTransform());
-			bundle.Transforms.Add(new CssMinify());
+			//bundle.Transforms.Add(new CssMinify()); // for some reason this isn't working
 			bundles.Add(bundle);
-            BundleTable.EnableOptimizations = true;
 
             //bundles.Add(new StyleBundle("~/Content/themes/base/css"));
         }
