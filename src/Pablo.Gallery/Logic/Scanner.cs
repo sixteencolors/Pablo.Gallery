@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Pablo.Gallery.Models;
@@ -9,7 +10,7 @@ using System.Text;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
-using RedDog.Storage.Files;
+//using RedDog.Storage.Files;
 using Exceptionless;
 
 namespace Pablo.Gallery.Logic
@@ -30,7 +31,6 @@ namespace Pablo.Gallery.Logic
 		{
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
-            updateStatus(Global.SixteenColorsStorageConnectionString);
 
             if (!string.IsNullOrEmpty(Global.SixteenColorsStorageConnectionString)) {
                 //CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
@@ -49,9 +49,20 @@ namespace Pablo.Gallery.Logic
                             var files = ((CloudFileDirectory)fileOrDirectory).ListFilesAndDirectories();
                             foreach (var file in files) {
                                 if (file.GetType() == typeof(CloudFile)) {
-                                    var year = file.Parent.Name;
-                                    CloudFile f = (CloudFile)file;
-                                    updateStatus(string.Format("{0}/{1}", year, f.Name));
+                                    var yearString = file.Parent.Name;
+                                    int year;
+                                    if (int.TryParse(yearString, out year)) {
+                                        CloudFile f = (CloudFile)file;
+                                        updateStatus(string.Format("{0}/{1}", year, f.Name));
+
+                                        using (ZipArchive archive = new ZipArchive(f.OpenRead())) {
+                                            foreach(var entry in archive.Entries) {
+                                                updateStatus(string.Format("{0}", entry.Name));
+                                            }   
+                                        }
+
+                                        return;
+                                    }
                                 }
                             }                            
                         } else if (fileOrDirectory.GetType() == typeof(CloudFile)) {
