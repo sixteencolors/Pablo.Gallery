@@ -44,6 +44,7 @@ namespace Pablo.Gallery.Logic
                 var share = account.CreateCloudFileClient().GetShareReference("sixteencolors-archive");
                 if (share.Exists()) {
                     var filesAndDirectories = share.GetRootDirectoryReference().ListFilesAndDirectories();
+                    updateStatus("children: " + filesAndDirectories.Count().ToString());
                     foreach(var fileOrDirectory in filesAndDirectories) {
                         if (fileOrDirectory.GetType() == typeof(CloudFileDirectory))
                             dirs.Add(((CloudFileDirectory)fileOrDirectory).Name);
@@ -54,7 +55,8 @@ namespace Pablo.Gallery.Logic
                         }
                     }
                 }
-                
+
+                return;
             }
             
             dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r).ToList();
