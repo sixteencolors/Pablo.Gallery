@@ -19,7 +19,7 @@ namespace Pablo.Gallery.Logic.Extractors
 
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
 		{
-			using (var archive = SharpCompress.Archive.ArchiveFactory.Open(archiveFileName))
+			using (var archive = SharpCompress.Archives.ArchiveFactory.Open(archiveFileName))
 			{
 				return new ExtractArchiveInfo
 				{
@@ -30,23 +30,24 @@ namespace Pablo.Gallery.Logic.Extractors
 			}
 		}
 
-		IEnumerable<ExtractFileInfo> ExtractFiles(SharpCompress.Archive.IArchive archive)
+		IEnumerable<ExtractFileInfo> ExtractFiles(SharpCompress.Archives.IArchive archive)
 		{
 			int order = 0;
-			foreach (var entry in archive.Entries)
+
+            foreach (var entry in archive.Entries)
 			{
 				if (entry.IsDirectory)
 					continue;
 				var currentEntry = entry;
 				yield return new ExtractFileInfo
 				{
-					FileName = entry.FilePath.Replace('/', '\\'),
+					FileName = entry.Key.Replace('/', '\\'),
 					Size = (int)entry.Size,
 					Order = order++,
 					GetStream = () =>
 					{
 						var ms = new MemoryStream((int)entry.Size);
-						currentEntry.WriteTo(ms);
+						currentEntry.OpenEntryStream().CopyTo(ms);
 						ms.Position = 0;
 						return ms;
 					}
@@ -58,13 +59,13 @@ namespace Pablo.Gallery.Logic.Extractors
 		{
 			fileName = fileName.Replace('\\', Path.DirectorySeparatorChar); // for unix form
 			archiveFileName = Path.Combine(Global.SixteenColorsArchiveLocation, archiveFileName);
-			using (var archive = SharpCompress.Archive.ArchiveFactory.Open(archiveFileName))
+			using (var archive = SharpCompress.Archives.ArchiveFactory.Open(archiveFileName))
 			{
-				var entry = archive.Entries.FirstOrDefault(r => string.Equals(r.FilePath, fileName, StringComparison.OrdinalIgnoreCase));
+				var entry = archive.Entries.FirstOrDefault(r => string.Equals(r.Key, fileName, StringComparison.OrdinalIgnoreCase));
 				if (entry != null)
 				{
 					var ms = new MemoryStream((int)entry.Size);
-					entry.WriteTo(ms);
+					entry.OpenEntryStream().CopyTo(ms);
 					ms.Position = 0;
 					return ms;
 				}

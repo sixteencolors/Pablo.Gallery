@@ -29,6 +29,12 @@ namespace Pablo.Gallery
 		{
 			get { return sixteenColorsCacheLocation ?? (sixteenColorsCacheLocation = ConfigurationManager.AppSettings["16c:CacheLocation"]); }
 		}
+
+        static string sixteenColorsStorageConnectionString;
+
+        public static string SixteenColorsStorageConnectionString {
+            get { return sixteenColorsStorageConnectionString ?? (sixteenColorsStorageConnectionString = ConfigurationManager.AppSettings["16c:StorageConnectionString"]); }
+        }
 	}
 }
 

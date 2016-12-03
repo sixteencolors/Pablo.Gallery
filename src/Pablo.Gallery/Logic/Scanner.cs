@@ -6,6 +6,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Pablo.Gallery.Models;
 using System.Text;
+using Microsoft.Azure; 
+using Microsoft.WindowsAzure.Storage; 
+using Microsoft.WindowsAzure.Storage.File;
+using RedDog.Storage.Files;
 
 namespace Pablo.Gallery.Logic
 {
@@ -25,10 +29,17 @@ namespace Pablo.Gallery.Logic
 		{
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
+            updateStatus(Global.SixteenColorsStorageConnectionString);
+            if (!string.IsNullOrEmpty(Global.SixteenColorsStorageConnectionString)) {
+                CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
+                                .CreateCloudFileClient()
+                                .GetShareReference("sixteencolors-archive");
+                share.Mount("S:");
+
+            }
 
 			var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r);
-			//dirs = dirs.SkipWhile(r => !r.EndsWith("1996", StringComparison.InvariantCultureIgnoreCase));
-			//dirs = dirs.Where(r => r.EndsWith("1997", StringComparison.OrdinalIgnoreCase));
+
 			foreach (var dir in dirs)
 			{
 				var idx = dir.LastIndexOf(Path.DirectorySeparatorChar);
