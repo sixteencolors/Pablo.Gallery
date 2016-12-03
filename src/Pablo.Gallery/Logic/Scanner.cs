@@ -31,7 +31,6 @@ namespace Pablo.Gallery.Logic
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
             updateStatus(Global.SixteenColorsStorageConnectionString);
-            List<string> dirs = new List<string>();
 
             if (!string.IsNullOrEmpty(Global.SixteenColorsStorageConnectionString)) {
                 //CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
@@ -46,9 +45,16 @@ namespace Pablo.Gallery.Logic
                     var filesAndDirectories = share.GetRootDirectoryReference().ListFilesAndDirectories();
                     updateStatus("children: " + filesAndDirectories.Count().ToString());
                     foreach(var fileOrDirectory in filesAndDirectories) {
-                        if (fileOrDirectory.GetType() == typeof(CloudFileDirectory))
-                            dirs.Add(((CloudFileDirectory)fileOrDirectory).Name);
-                        else if (fileOrDirectory.GetType() == typeof(CloudFile)) {
+                        if (fileOrDirectory.GetType() == typeof(CloudFileDirectory)) {
+                            var files = ((CloudFileDirectory)fileOrDirectory).ListFilesAndDirectories();
+                            foreach (var file in files) {
+                                if (file.GetType() == typeof(CloudFile)) {
+                                    var year = file.Parent.Name;
+                                    CloudFile f = (CloudFile)file;
+                                    updateStatus(string.Format("{0}/{1}", year, f.Name));
+                                }
+                            }                            
+                        } else if (fileOrDirectory.GetType() == typeof(CloudFile)) {
                             CloudFile file = (CloudFile)fileOrDirectory;
                             var year = file.Parent.Name;
                             updateStatus(string.Format("{0}/{1}", year, file.Name));
@@ -59,7 +65,7 @@ namespace Pablo.Gallery.Logic
                 return;
             }
             
-            dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r).ToList();
+            var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r).ToList();
 
 			foreach (var dir in dirs)
 			{
