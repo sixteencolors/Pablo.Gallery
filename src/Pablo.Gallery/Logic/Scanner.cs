@@ -35,8 +35,8 @@ namespace Pablo.Gallery.Logic
                 CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
                                 .CreateCloudFileClient()
                                 .GetShareReference("sixteencolors-archive");
-                ExceptionlessClient.Default.SubmitLog("Share Exists: " + share.Exists(), Exceptionless.Logging.LogLevel.Info);
-                updateStatus("Share Exists: " + share.Exists());
+                ExceptionlessClient.Default.SubmitLog(string.Format("Share Exists: {0}; root: ", share.Exists(), share.GetRootDirectoryReference().Name), Exceptionless.Logging.LogLevel.Info);
+                
                 share.Mount("S:");
 
             }
