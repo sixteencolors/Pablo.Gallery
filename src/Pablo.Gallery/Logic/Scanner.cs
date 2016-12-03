@@ -31,17 +31,33 @@ namespace Pablo.Gallery.Logic
 			var startTime = DateTime.Now;
 			updateStatus(string.Format("Scanning began {0:g}", startTime));
             updateStatus(Global.SixteenColorsStorageConnectionString);
+            List<string> dirs = new List<string>();
+
             if (!string.IsNullOrEmpty(Global.SixteenColorsStorageConnectionString)) {
-                CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
-                                .CreateCloudFileClient()
-                                .GetShareReference("sixteencolors-archive");
-                ExceptionlessClient.Default.SubmitLog(string.Format("Share Exists: {0}; root: {1}", share.Exists(), share.GetRootDirectoryReference().Name), Exceptionless.Logging.LogLevel.Info);
+                //CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
+                //                .CreateCloudFileClient()
+                //                .GetShareReference("sixteencolors-archive");
+                //ExceptionlessClient.Default.SubmitLog(string.Format("Share Exists: {0}; root: {1}", share.Exists(), share.GetRootDirectoryReference().Name), Exceptionless.Logging.LogLevel.Info);
+
+                //share.Mount("S:");
+                var account = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString);
+                var share = account.CreateCloudFileClient().GetShareReference("sixteencolors-archive");
+                if (share.Exists()) {
+                    var filesAndDirectories = share.GetRootDirectoryReference().ListFilesAndDirectories();
+                    foreach(var fileOrDirectory in filesAndDirectories) {
+                        if (fileOrDirectory.GetType() == typeof(CloudFileDirectory))
+                            dirs.Add(((CloudFileDirectory)fileOrDirectory).Name);
+                        else if (fileOrDirectory.GetType() == typeof(CloudFile)) {
+                            CloudFile file = (CloudFile)fileOrDirectory;
+                            var year = file.Parent.Name;
+                            updateStatus(string.Format("{0}/{1}", year, file.Name));
+                        }
+                    }
+                }
                 
-                share.Mount("S:");
-
             }
-
-			var dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r);
+            
+            dirs = Directory.EnumerateDirectories(Global.SixteenColorsArchiveLocation).OrderByDescending(r => r).ToList();
 
 			foreach (var dir in dirs)
 			{
