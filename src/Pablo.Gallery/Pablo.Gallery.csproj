@@ -91,12 +91,8 @@
       <HintPath>..\packages\Exceptionless.4.0.1922\lib\net45\Exceptionless.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Exceptionless.Extras, Version=2.0.1251.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Exceptionless.Mvc.2.0.1251\lib\net45\Exceptionless.Extras.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Exceptionless.Mvc, Version=2.0.1251.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Exceptionless.Mvc.2.0.1251\lib\net45\Exceptionless.Mvc.dll</HintPath>
+    <Reference Include="Exceptionless.Mvc, Version=4.0.1922.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Exceptionless.Mvc.4.0.1922\lib\net45\Exceptionless.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="HibernatingRhinos.Profiler.Appender">
