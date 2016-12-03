@@ -27,13 +27,12 @@ namespace Pablo.Gallery
 			var bundle = new StyleBundle("~/bundles/styles").Include(
 			    "~/Content/colorbox.css",
 				"~/Content/bootstrap.css",
-				"~/Content/css/select2.css",
-				"~/Content/Site.less"				
+				"~/Content/css/select2.css"		
 			);
 			bundle.Transforms.Clear();
-			bundle.Transforms.Add(new LessTransform());
-			//bundle.Transforms.Add(new CssMinify()); // for some reason this isn't working
-			bundles.Add(bundle);
+            //bundle.Transforms.Add(new LessTransform());
+            bundle.Transforms.Add(new CssMinify()); // for some reason this isn't working
+            bundles.Add(bundle);
 
             //bundles.Add(new StyleBundle("~/Content/themes/base/css"));
         }
