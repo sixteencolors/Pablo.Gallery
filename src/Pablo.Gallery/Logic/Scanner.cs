@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Pablo.Gallery.Models;
 using System.Text;
-using Microsoft.Azure; 
-using Microsoft.WindowsAzure.Storage; 
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
 using RedDog.Storage.Files;
+using Exceptionless;
 
 namespace Pablo.Gallery.Logic
 {
@@ -34,6 +35,8 @@ namespace Pablo.Gallery.Logic
                 CloudFileShare share = CloudStorageAccount.Parse(Global.SixteenColorsStorageConnectionString)
                                 .CreateCloudFileClient()
                                 .GetShareReference("sixteencolors-archive");
+                ExceptionlessClient.Default.SubmitLog("Share Exists: " + share.Exists(), Exceptionless.Logging.LogLevel.Info);
+                updateStatus("Share Exists: " + share.Exists());
                 share.Mount("S:");
 
             }
