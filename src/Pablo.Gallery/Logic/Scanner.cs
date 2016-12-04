@@ -109,7 +109,9 @@ namespace Pablo.Gallery.Logic
                                                                 Order = order++,
                                                                 GetStream = () => {
                                                                     return entry.Open();
-                                                                }
+                                                                },
+                                                                FileName = entry.Name,
+                                                                Comment = null
                                                             };
                                                             try {
                                                                 ExtractFileInfo(db, pack, fileInfo, () => GetStream(f.Name, fileInfo));
