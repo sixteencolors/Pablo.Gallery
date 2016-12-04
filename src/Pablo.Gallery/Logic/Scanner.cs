@@ -44,7 +44,7 @@ namespace Pablo.Gallery.Logic
                 var share = account.CreateCloudFileClient().GetShareReference("sixteencolors-archive");
                 if (share.Exists()) {
                     var filesAndDirectories = share.GetRootDirectoryReference().ListFilesAndDirectories();
-                    updateStatus("children: " + filesAndDirectories.Count().ToString());
+
                     foreach(var fileOrDirectory in filesAndDirectories) {
                         if (fileOrDirectory.GetType() == typeof(CloudFileDirectory)) {
                             var files = ((CloudFileDirectory)fileOrDirectory).ListFilesAndDirectories();
@@ -91,8 +91,8 @@ namespace Pablo.Gallery.Logic
                                                             Date = date
                                                         };
 
-                                                        //db.Packs.Add(pack);
-                                                        //db.SaveChanges();
+                                                        db.Packs.Add(pack);
+                                                        db.SaveChanges();
                                                     } else if (onlyNew) {
                                                         updateStatus(string.Format("Skipping pack {0}", f.Name));
                                                         continue;
@@ -127,6 +127,19 @@ namespace Pablo.Gallery.Logic
                                                     }
 
 
+                                                    if ( /*pack.Thumbnail == null &&*/ pack.Files != null) {
+                                                        pack.Thumbnail = pack.Files.FirstOrDefault(r => r.FileName.ToLowerInvariant() == "file_id.diz");
+                                                        if (pack.Thumbnail == null)
+                                                            pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".diz");
+                                                        if (pack.Thumbnail == null)
+                                                            pack.Thumbnail = pack.Files.FirstOrDefault(r => Path.GetExtension(r.FileName).ToLowerInvariant() == ".nfo");
+                                                        if (pack.Thumbnail == null)
+                                                            pack.Thumbnail =
+                                                                pack.Files.FirstOrDefault(
+                                                                    r => Path.GetFileNameWithoutExtension(r.FileName).ToLowerInvariant().Contains("info"));
+                                                        if (pack.Thumbnail == null)
+                                                            pack.Thumbnail = pack.Files.OrderBy(r => r.Order).FirstOrDefault(r => r.Type != null);
+                                                    }
                                                 } catch (Exception ex) {
                                                     new Exception(string.Format("Error saving changes to '{0}'", pack.FileName), ex).ToExceptionless().Submit();
                                                     updateStatus(string.Format("Error saving changes to '{0}', {1}", pack.FileName, ex));
@@ -138,7 +151,7 @@ namespace Pablo.Gallery.Logic
                                         }
                                         //var archiveInfo = extractor.ExtractInfo(f.Name);
 
-                                        return;
+                                        //return;
                                     }
                                 }
                             }                            
