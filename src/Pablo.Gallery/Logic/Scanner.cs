@@ -12,6 +12,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
 //using RedDog.Storage.Files;
 using Exceptionless;
+using Pablo.Gallery.Logic.Extractors;
 
 namespace Pablo.Gallery.Logic
 {
@@ -54,12 +55,86 @@ namespace Pablo.Gallery.Logic
                                     if (int.TryParse(yearString, out year)) {
                                         CloudFile f = (CloudFile)file;
                                         updateStatus(string.Format("{0}/{1}", year, f.Name));
+                                        var extractor = Extractors.ExtractorFactory.GetInfoExtractor(f.Name);
+                                        if (extractor == null)
+                                            continue;
 
                                         using (ZipArchive archive = new ZipArchive(f.OpenRead())) {
-                                            foreach(var entry in archive.Entries) {
-                                                updateStatus(string.Format("{0}", entry.Name));
-                                            }   
+                                            
+                                            DateTime? date;
+                                            var match = Regex.Match(f.Name, @"^(.+?)(?<month>\d\d)(?<year>\d\d)[.](\w+)$", RegexOptions.ExplicitCapture);
+                                            if (match.Success) {
+                                                var monthString = match.Groups["month"].Value;
+                                                int month;
+                                                if (int.TryParse(monthString, out month) && month >= 1 && month <= 12) {
+                                                    date = new DateTime(year, month, 1);
+                                                } else
+                                                    date = new DateTime(year, 1, 1);
+                                            } else
+                                                date = new DateTime(year, 1, 1);
+
+                                            using (var db = new GalleryContext()) {
+                                                var pack = db.Packs.FirstOrDefault(r => r.FileName.ToLower() == f.Name.ToLower());
+                                                try {
+                                                    if (pack == null) {
+                                                        updateStatus(string.Format("Adding pack {0}", f.Name));
+                                                        var name = Path.GetFileNameWithoutExtension(f.Name);
+                                                        if (db.Packs.Any(p => p.Name == name)) {
+                                                            updateStatus(string.Format("Error adding pack '{0}', a pack with the same name already exists",
+                                                                f.Name.ToLower()));
+                                                            continue;
+                                                        }
+
+                                                        pack = new Pack {
+                                                            Name = CanonicalName(Path.GetFileNameWithoutExtension(f.Name)),
+                                                            FileName = f.Name,
+                                                            Date = date
+                                                        };
+
+                                                        //db.Packs.Add(pack);
+                                                        //db.SaveChanges();
+                                                    } else if (onlyNew) {
+                                                        updateStatus(string.Format("Skipping pack {0}", f.Name));
+                                                        continue;
+                                                    } else {
+                                                        updateStatus(string.Format("Updating pack {0}", f.Name));
+                                                        pack.Name = CanonicalName(f.Name);
+                                                    }
+                                                    try {
+                                                        int order = 0;
+                                                        foreach (var entry in archive.Entries) {
+
+                                                            var fileInfo = new ExtractFileInfo() {
+                                                                Size = (int)entry.Length,
+                                                                Order = order++,
+                                                                GetStream = () => {
+                                                                    return entry.Open();
+                                                                }
+                                                            };
+                                                            try {
+                                                                ExtractFileInfo(db, pack, fileInfo, () => GetStream(f.Name, fileInfo));
+                                                            } catch (Exception ex) {
+                                                                new Exception(string.Format("Error extracting file '{0}'", fileInfo.FileName), ex).ToExceptionless().Submit();
+                                                                updateStatus(string.Format("Error extracting file '{0}', {1}", fileInfo.FileName, ex));
+                                                            }
+                                                        }
+
+                                                    } catch (Exception ex) {
+                                                        new Exception(string.Format("Error extracting pack '{0}'", pack.FileName), ex).ToExceptionless().Submit();
+                                                        updateStatus(string.Format("Error extracting pack '{0}', {1}", pack.FileName, ex));
+                                                    }
+
+
+                                                } catch (Exception ex) {
+                                                    new Exception(string.Format("Error saving changes to '{0}'", pack.FileName), ex).ToExceptionless().Submit();
+                                                    updateStatus(string.Format("Error saving changes to '{0}', {1}", pack.FileName, ex));
+                                                    db.Entry(db.Packs).Reload();
+                                                    db.Entry(db.Files).Reload();
+                                                }
+                                            }
+
                                         }
+                                        //var archiveInfo = extractor.ExtractInfo(f.Name);
 
                                         return;
                                     }

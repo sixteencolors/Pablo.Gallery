@@ -21,7 +21,7 @@ namespace Pablo.Gallery.Logic.Extractors
 		public override ExtractArchiveInfo ExtractInfo(string archiveFileName)
 		{
 			using (var archive = new ZipFile(archiveFileName))
-			{
+			{                
 				var fileInfo = new FileInfo(archiveFileName);
 				return new ExtractArchiveInfo
 				{
@@ -31,6 +31,25 @@ namespace Pablo.Gallery.Logic.Extractors
 				};
 			}
 		}
+
+        //public override ExtractArchiveInfo ExtractInfo(Stream stream) {
+            
+        //    using (var archive = new ZipInputStream(stream)) {
+        //        return new ExtractArchiveInfo {
+        //            Size = (int)archive.Length,
+        //            Comment = "", // TODO: Figure out if we need the comment
+        //            Files = ExtractFiles(archive).ToArray()
+        //        }
+        //    }
+        //}
+
+        //static IEnumerable<ExtractFileInfo> ExtractFiles(ZipInputStream archive) {
+        //    int order = 0;
+        //    foreach(var entry in archive.entr) {
+        //        if (e)
+        //    }
+        //}
+
 
 		static IEnumerable<ExtractFileInfo> ExtractFiles(ZipFile archive)
 		{
@@ -67,7 +86,7 @@ namespace Pablo.Gallery.Logic.Extractors
 		}
 
 		public override async Task<Stream> ExtractFile(string archiveFileName, string fileName)
-		{
+		{            
 			var zf = new ZipFile(archiveFileName);
 			var entry = zf[fileName];
 			if (entry != null)
